@@ -42,13 +42,13 @@ class Game:
         self.active = active
         self.wallpaper = pygame.image.load('data/textures/wallpaper3 (hd).png')
         self.attempts = 5
-         self.font = pygame.font.Font(None, 30)
-         self.attempt_label = pygame.font.render(f'попыток: {self.attempts}')
-         self.attempt_label.blit(100,  50)
-         self.wallpaper = pygame.image.load('data/textures/ui1.png')
+        self.font = pygame.font.Font(None, 30)
+        self.attempt_label = pygame.font.render(f'попыток: {self.attempts}')
+        self.attempt_label.blit(100,  50)
+        self.wallpaper = pygame.image.load('data/textures/ui1.png')
      
-     def reset():
-         self.attempts = 5
+    def reset(self):
+        self.attempts = 5
 
 
 if __name__ == '__main__':
