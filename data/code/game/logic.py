@@ -1,6 +1,7 @@
 import random
 
-class Game:
+
+class Logic:
     def __init__(self, weight: int, height: int, dictionary_path=None, word=None):
         self.weight = weight
         self.height = height
@@ -8,15 +9,15 @@ class Game:
         try:
             with open(dictionary_path, 'r') as dictionary:
                 self.dictionary = dictionary.readlines()
-        except Exception: # TODO Найти исключение и вписать его если файл пустой
-            pass # TODO Вызывать окно если произошла ошибка
+        except Exception:  # TODO Найти исключение и вписать его если файл пустой
+            pass  # TODO Вызывать окно если произошла ошибка
 
         if word is None:
             self.word = random.choice(self.dictionary)
         else:
             self.word = word
 
-        self.right_letters = {} # Ключ - буква, значение - правильные индексы
+        self.right_letters = {}  # Ключ - буква, значение - правильные индексы
 
         for index in range(len(self.word)):
             if self.word[index] not in self.right_letters.keys():
@@ -27,9 +28,8 @@ class Game:
         self.input_word = ''
         self.wrong_letters = []
 
-
     def keyboard_press(self, key) -> str:
-        if key != 'backspace': # TODO: Посмотреть как выглядит event backspace
+        if key != 'backspace':  # TODO: Посмотреть как выглядит event backspace
             self.input_word += key
         else:
             self.input_word = self.input_word[:-1]
@@ -48,7 +48,7 @@ class Game:
             список с индексами этих букв, если буква стоит в правильном месте, строку 'неверное положение'
             если положение неверное"""
 
-        if self.input_word not in self.dictionary: # Если слова нет в словаре.
+        if self.input_word not in self.dictionary:  # Если слова нет в словаре.
             return False
         else:
             data = {}
