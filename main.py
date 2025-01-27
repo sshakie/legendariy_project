@@ -36,9 +36,8 @@ def main():
                 else:
                     running = False
                     # Нажата кнопка выхода
-
             elif shop_window.on_click(event):
-                butt_text = menu_window.on_click(event).get_text()
+                butt_text = shop_window.on_click(event).get_text()
                 if butt_text == '-1 ошибка':
                     pass
                 elif butt_text == '+1 буква':
