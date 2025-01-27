@@ -2,9 +2,7 @@ import random
 
 
 class Logic:
-    def __init__(self, weight: int, height: int, dictionary_path=None, word=None):
-        self.weight = weight
-        self.height = height
+    def __init__(self, dictionary_path=None, word=None):
 
         try:
             with open(dictionary_path, 'r') as dictionary:
@@ -31,7 +29,7 @@ class Logic:
     def get_wrong_letters(self) -> list:
         return self.wrong_letters
 
-    def check_input_word(self, input_word) -> bool | dict:
+    def check_input_word(self, input_word: str) -> bool | dict:
         """:return False если слова нет в словаре.
            :return dict[str] = list[int] | None | str Если слово есть в словаре. None - если буквы нет в слове,
             список с индексами этих букв, если буква стоит в правильном месте, строку 'неверное положение'
