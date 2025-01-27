@@ -5,7 +5,7 @@ class Game:
     def __init__(self, screen, active=False):
         self.screen = screen
         self.active = active
-        self.wallpaper = pygame.image.load('data/textures/wallpaper3 (hd).png')
+        self.wallpaper = pygame.image.load('data/textures/wallpaper3.png')
         self.attempts = 5
         self.font = pygame.font.Font(None, 30)
 

@@ -6,11 +6,11 @@ class Menu:
     def __init__(self, screen, active=False):
         self.screen = screen
         self.active = active
-        self.wallpaper = pygame.image.load('data/textures/wallpaper1 (hd).png')
-        self.title = pygame.image.load('data/textures/ui1.png').subsurface((0, 0, 200, 75))
-        self.play_button = MenuButton(175, 250, 250, 62, 'data/textures/ui1.png', 'Играть', 50, crop=(3, 77, 250, 62))
-        self.shop_button = MenuButton(175, 325, 250, 58, 'data/textures/ui1.png', 'Ларёк', 50, crop=(3, 155, 250, 58))
-        self.exit_button = MenuButton(175, 400, 250, 60, 'data/textures/ui1.png', '', 50, crop=(3, 226, 250, 60))
+        self.wallpaper = pygame.image.load('data/textures/wallpaper1.png')
+        self.title = pygame.image.load('data/textures/ui.png').subsurface((0, 0, 200, 75))
+        self.play_button = MenuButton(175, 250, 250, 62, 'data/textures/ui.png', 'Играть', 50, crop=(3, 77, 250, 62))
+        self.shop_button = MenuButton(175, 325, 250, 58, 'data/textures/ui.png', 'Ларёк', 50, crop=(3, 155, 250, 58))
+        self.exit_button = MenuButton(175, 400, 250, 60, 'data/textures/ui.png', '', 50, crop=(3, 226, 250, 60))
 
     def render(self):
         self.screen.blit(self.wallpaper, (0, 0))
