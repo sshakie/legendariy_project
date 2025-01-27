@@ -22,6 +22,36 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
 
+            if menu_window.on_click(event):
+                butt_text = menu_window.on_click(event).get_text()
+                if butt_text == 'Играть':
+                    print(1)
+                    pass  # TODO Логика при нажатии кнопки играть
+                elif butt_text == 'Ларёк':
+                    pass  # TODO Логика при нажатии кнопки ларек
+                elif butt_text == 'Настройки':
+                    pass  # TODO Логика при нажатии кнопки настройки
+                else:
+                    running = False
+                    # Нажата кнопка выхода
+
+            elif shop_window.on_click(event):
+                butt_text = menu_window.on_click(event).get_text()
+                if butt_text == '-1 ошибка':
+                    pass
+                elif butt_text == '+1 буква':
+                    pass
+                elif butt_text == 'Игра':
+                    pass
+                elif butt_text == 'Кнопки':
+                    pass
+                elif butt_text == 'Детали':
+                    pass
+                elif butt_text == 'Буквы':
+                    pass
+                elif butt_text == 'Фон':
+                    pass
+
         # Логика переключения окон
         if menu_window.active:
             menu_window.render()
@@ -55,6 +85,14 @@ class Menu:
         self.screen.blit(*self.shop_button.get_rect_coord())
         self.screen.blit(*self.settings_button.get_rect_coord())
         self.screen.blit(*self.exit_button.get_rect_coord())
+
+    def on_click(self, event):
+        if self.active:
+            for button in [self.play_button, self.shop_button, self.settings_button, self.exit_button]:
+                if button.is_clicked(event):
+                    return button
+        else:
+            return False
 
 
 class Shop:
@@ -90,6 +128,15 @@ class Shop:
         self.screen.blit(*self.letter_custom.get_rect_coord())
         self.screen.blit(*self.background_custom.get_rect_coord())
 
+    def on_click(self, event):
+        if self.active:
+            for button in [self.letter_upgrade, self.game_upgrade, self.button_custom,
+                           self.detail_custom, self.letter_custom]:
+                if button.is_clicked(event):
+                    return button
+        else:
+            return False
+
 
 class Game:
     def __init__(self, screen, active=False):
@@ -108,4 +155,5 @@ class Game:
         self.attempts = 5
 
 
-main()
+if __name__ == '__main__':
+    main()
