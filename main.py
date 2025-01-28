@@ -10,8 +10,6 @@ def main():
     pygame.display.set_caption('Wordy')
     size = width, height = 600, 800
     screen = pygame.display.set_mode(size, pygame.NOFRAME)
-
-    config = open('data/config').read()
     menu_window = Menu(screen, active=True)
     shop_window = Shop(screen)
     game_window = Game(screen)
@@ -64,6 +62,7 @@ def main():
 
         # Логика переключения окон
         if menu_window.active:
+            menu_window.selecting_button()
             menu_window.render()
         elif shop_window.active:
             shop_window.render()

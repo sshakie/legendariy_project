@@ -1,5 +1,6 @@
 import pygame
 from data.code.Button import MenuButton, KeyboardButton
+from data.code.class_config import Config
 
 
 class Shop:
@@ -10,7 +11,8 @@ class Shop:
         self.no_problems = pygame.image.load('data/textures/ui.png').subsurface((810, 0, 600, 800))
         self.coin = pygame.image.load('data/textures/ui.png').subsurface((135, 0, 33, 30))
         self.font = pygame.font.Font(None, 30)
-        self.money = ''.join([i for i in open('data/config').readlines() if 'money' in i])
+        self.config = Config()
+        self.money = self.config.money
         self.money_label = self.font.render(self.money[6:], True, (100, 0, 0))
         self.separator1 = pygame.image.load('data/textures/ui.png').subsurface((169, 0, 600, 40))
         self.separator2 = pygame.image.load('data/textures/ui.png').subsurface((169, 0, 600, 40))
