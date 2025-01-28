@@ -2,9 +2,7 @@ import random
 
 
 class Logic:
-    def __init__(self, weight: int, height: int, dictionary_path=None, word=None):
-        self.weight = weight
-        self.height = height
+    def __init__(self, dictionary_path=None, word=None):
 
         try:
             with open(dictionary_path, 'r') as dictionary:
@@ -25,48 +23,35 @@ class Logic:
             else:
                 self.right_letters[self.word[index]].append(index)
 
-        self.input_word = ''
         self.wrong_letters = []
 
-    def keyboard_press(self, key) -> str:
-        if key != 'backspace':  # TODO: Посмотреть как выглядит event backspace
-            self.input_word += key
-        else:
-            self.input_word = self.input_word[:-1]
-
-        return self.input_word
-
-    def get_input_word(self) -> str:
-        return self.input_word
 
     def get_wrong_letters(self) -> list:
         return self.wrong_letters
 
-    def check_input_word(self) -> bool | dict:
+    def check_input_word(self, input_word: str) -> bool | dict:
         """:return False если слова нет в словаре.
            :return dict[str] = list[int] | None | str Если слово есть в словаре. None - если буквы нет в слове,
             список с индексами этих букв, если буква стоит в правильном месте, строку 'неверное положение'
             если положение неверное"""
 
-        if self.input_word not in self.dictionary:  # Если слова нет в словаре.
+        if input_word not in self.dictionary:  # Если слова нет в словаре.
             return False
         else:
             data = {}
-            for i in range(len(self.input_word)):
-                if self.input_word[i] not in self.right_letters.keys():
-                    self.wrong_letters.append(self.input_word[i])
-                    data[self.input_word[i]] = None
+            for i in range(len(input_word)):
+                if input_word[i] not in self.right_letters.keys():
+                    self.wrong_letters.append(input_word[i])
+                    data[input_word[i]] = None
                 else:
-                    if i in self.right_letters[self.input_word[i]]:
-                        if self.input_word[i] not in data.keys():
-                            data[self.input_word[i]] = [i]
+                    if i in self.right_letters[input_word[i]]:
+                        if input_word[i] not in data.keys():
+                            data[input_word[i]] = [i]
                         else:
-                            if not isinstance(data[self.input_word[i]], str):
-                                data[self.input_word[i]].append(i)
+                            if not isinstance(data[input_word[i]], str):
+                                data[input_word[i]].append(i)
                             else:
-                                data[self.input_word[i]] = [i]
+                                data[input_word[i]] = [i]
                     else:
-                        data[self.input_word[i]] = 'неверное положение'
-
-        self.input_word = ''
+                        data[input_word[i]] = 'неверное положение'
         return data
