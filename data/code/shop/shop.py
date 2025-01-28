@@ -53,12 +53,12 @@ class Shop:
         self.screen.blit(*self.letter_custom.get_rect_coord())
         self.screen.blit(*self.background_custom.get_rect_coord())
 
-        # self.screen.blit(self.exit_button, (46, 657))
+        self.screen.blit(*self.exit_button.get_rect_coord())
 
     def on_click(self, event):
         if self.active:
             for button in [self.letter_upgrade, self.game_upgrade, self.button_custom,
-                           self.detail_custom, self.letter_custom]:
+                           self.detail_custom, self.letter_custom, self.exit_button]:
                 if button.is_clicked(event):
                     return button
         else:

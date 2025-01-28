@@ -53,6 +53,9 @@ class KeyboardButton(pygame.sprite.Sprite):
     def get_rect_coord(self):
         return self.surf, self.rect.topleft
 
+    def get_text(self):
+        return self.line_text
+
 
 class MenuButton(pygame.sprite.Sprite):
     def __init__(self, x, y, width, height, image_path, text, font_size, text_color=(0, 0, 0), crop: tuple[int, int, int, int]=None):

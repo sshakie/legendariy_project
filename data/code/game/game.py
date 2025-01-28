@@ -17,7 +17,7 @@ class Game:
         self.screen.blit(self.wallpaper, (0, 0))
         attempt_label = self.font.render(f'Попыток: {self.attempts}', True, (0, 0, 0))
         self.screen.blit(attempt_label, (289, 52))
-        # self.screen.blit(self.exit_button, (46, 657))
+        self.screen.blit(*self.exit_button.get_rect_coord())
         self.screen.blit(self.line, (0, 543))
 
     def reset(self):

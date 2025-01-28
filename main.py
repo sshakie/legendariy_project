@@ -38,7 +38,7 @@ def main():
                     # Нажата кнопка выхода
 
             elif shop_window.on_click(event):
-                butt_text = menu_window.on_click(event).get_text()
+                butt_text = shop_window.on_click(event).get_text()
                 if butt_text == '-1 ошибка':
                     pass
                 elif butt_text == '+1 буква':
@@ -53,6 +53,15 @@ def main():
                     pass
                 elif butt_text == 'Фон':
                     pass
+                elif butt_text == '<- назад':
+                    menu_window.active = True
+                    shop_window.active = False
+
+            # elif game_window.on_click(event):
+            #     butt_text = game_window.on_click(event).get_text()
+            #     if butt_text == 'выход':
+            #         menu_window.active = True
+            #         game_window.active = False
 
         # Логика переключения окон
         if menu_window.active:
