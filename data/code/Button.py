@@ -71,10 +71,10 @@ class MenuButton(pygame.sprite.Sprite):
         self.rect = self.surf.get_rect(topleft=(x, y))
         pygame.draw.rect(self.surf, (255, 255, 255, 0), self.rect)
 
-        self.image = load_image(image_path)
+        self.base_image = load_image(image_path).subsurface(crop)
 
         if crop:
-            self.image = self.image.subsurface(crop)
+            self.image = self.base_image
             if self.selected_coords != (0, 0):
                 self.selected_image = load_image(image_path).subsurface((self.selected_coords[0], self.selected_coords[1], crop[2], crop[3]))
 
@@ -86,12 +86,12 @@ class MenuButton(pygame.sprite.Sprite):
             # Настраиваем шрифт и текст
         self.font = pygame.font.Font(None, font_size)
         self.text = self.font.render(self.line_text, True, self.text_color)
-        text_x = width // 2 - self.text.get_width() // 2
-        text_y = (height // 2 - self.text.get_height() // 2) - 10
+        self.text_x = width // 2 - self.text.get_width() // 2
+        self.text_y = (height // 2 - self.text.get_height() // 2) - 10
 
         # Рисуем изображение и текст на кнопке
         self.surf.blit(self.image, (0, 0))
-        self.surf.blit(self.text, (text_x, text_y))
+        self.surf.blit(self.text, (self.text_x, self.text_y))
 
     def check_cursor_position(self):
         return self.rect.collidepoint(pygame.mouse.get_pos())
@@ -108,13 +108,11 @@ class MenuButton(pygame.sprite.Sprite):
         return self.line_text
 
     def selecting(self):
+        self.surf = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
         if self.check_cursor_position():
-            # self.image = self.selected_image
-            self.font = pygame.font.Font(None, self.font_size)
-            self.text = self.font.render(self.line_text, True, self.text_color)
-            text_x = self.width // 2 - self.text.get_width() // 2
-            text_y = (self.height // 2 - self.text.get_height() // 2) - 10
-
-            # Рисуем изображение и текст на кнопке
-            self.surf.blit(self.selected_image, (0, 0))
-            self.surf.blit(self.text, (text_x, text_y))
+            self.image = self.selected_image
+        else:
+            self.image = self.base_image
+        # Рисуем изображение и текст на кнопке
+        self.surf.blit(self.image, (0, 0))
+        self.surf.blit(self.text, (self.text_x, self.text_y))
