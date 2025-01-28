@@ -1,5 +1,5 @@
 import pygame
-from data.code.Button import MenuButton
+from data.code.Button import MenuButton, KeyboardButton
 
 
 class Shop:
@@ -7,30 +7,44 @@ class Shop:
         self.screen = screen
         self.active = active
         self.wallpaper = pygame.image.load('data/textures/wallpaper2.png')
-        self.separator1 = pygame.image.load('data/textures/ui.png').subsurface((229, 505, 362, 32))
-        self.separator2 = pygame.image.load('data/textures/ui.png').subsurface((229, 505, 362, 32))
+        self.no_problems = pygame.image.load('data/textures/ui.png').subsurface((810, 0, 600, 800))
+        self.coin = pygame.image.load('data/textures/ui.png').subsurface((135, 0, 33, 30))
+        self.font = pygame.font.Font(None, 30)
+        self.money = ''.join([i for i in open('data/config').readlines() if 'money' in i])
+        self.money_label = self.font.render(self.money[6:], True, (100, 0, 0))
+        self.separator1 = pygame.image.load('data/textures/ui.png').subsurface((169, 0, 600, 40))
+        self.separator2 = pygame.image.load('data/textures/ui.png').subsurface((169, 0, 600, 40))
+        self.upgrade_text = pygame.image.load('data/textures/ui.png').subsurface((299, 130, 294, 57))
+        self.customization_text = pygame.image.load('data/textures/ui.png').subsurface((299, 188, 335, 56))
 
-        self.mistake_upgrade = MenuButton(55, 136, 174, 102, 'data/textures/ui.png', '-1 ошибка', 30,
-                                          crop=(283, 129, 102, 57))
-        self.letter_upgrade = MenuButton(240, 136, 174, 102, 'data/textures/ui.png', '+1 буква', 30,
-                                         crop=(283, 129, 102, 57))
-        self.game_upgrade = MenuButton(54, 244, 174, 102, 'data/textures/ui.png', 'Игра', 30, crop=(283, 129, 102, 57))
+        self.mistake_upgrade = MenuButton(29, 197, 134, 75, 'data/textures/ui.png', 'право на ошибку', 20,
+                                          crop=(0, 0, 134, 75))
+        self.letter_upgrade = MenuButton(189, 196, 134, 75, 'data/textures/ui.png', 'раскрыть букву', 20,
+                                         crop=(0, 0, 134, 75))
+        self.game_upgrade = MenuButton(29, 277, 134, 75, 'data/textures/ui.png', 'игра-капча', 20, crop=(0, 0, 134, 75))
 
-        self.button_custom = MenuButton(93, 428, 174, 102, 'data/textures/ui.png', 'Кнопки', 30,
-                                        crop=(283, 129, 102, 57))
-        self.detail_custom = MenuButton(260, 428, 174, 102, 'data/textures/ui.png', 'Детали', 30,
-                                        crop=(283, 129, 102, 57))
-        self.letter_custom = MenuButton(420, 428, 174, 102, 'data/textures/ui.png', 'Буквы', 30,
-                                        crop=(283, 129, 102, 57))
-        self.background_custom = MenuButton(460, 550, 102, 70, 'data/textures/ui.png', 'Фон', 30,
-                                            crop=(283, 129, 102, 57))
+        self.button_custom = MenuButton(111, 427, 134, 75, 'data/textures/ui.png', 'кнопки', 30,
+                                        crop=(0, 0, 134, 75))
+        self.detail_custom = MenuButton(271, 427, 134, 75, 'data/textures/ui.png', 'детали', 30,
+                                        crop=(0, 0, 134, 75))
+        self.letter_custom = MenuButton(431, 427, 134, 75, 'data/textures/ui.png', 'буквы', 30,
+                                        crop=(0, 0, 134, 75))
+        self.background_custom = MenuButton(472, 512, 86, 59, 'data/textures/ui.png', 'фон', 30,
+                                            crop=(0, 76, 86, 59))
+
+        self.exit_button = KeyboardButton(46, 657, 509, 75, (255, 255, 255), '<- назад', border_radius=2)
 
     def render(self):
         self.screen.blit(self.wallpaper, (0, 0))
-        self.screen.blit(self.separator1, (36, 118))
-        self.screen.blit(self.separator2, (36, 414))
-        self.screen.blit(*self.mistake_upgrade.get_rect_coord())
+        self.screen.blit(self.no_problems, (0, 0))
+        self.screen.blit(self.coin, (551, 17))
+        self.screen.blit(self.money_label, (535, 24))
+        self.screen.blit(self.separator1, (0, 160))
+        self.screen.blit(self.separator2, (0, 390))
+        self.screen.blit(self.upgrade_text, (143, 119))
+        self.screen.blit(self.customization_text, (125, 360))
 
+        self.screen.blit(*self.mistake_upgrade.get_rect_coord())
         self.screen.blit(*self.letter_upgrade.get_rect_coord())
         self.screen.blit(*self.game_upgrade.get_rect_coord())
 
@@ -38,6 +52,8 @@ class Shop:
         self.screen.blit(*self.detail_custom.get_rect_coord())
         self.screen.blit(*self.letter_custom.get_rect_coord())
         self.screen.blit(*self.background_custom.get_rect_coord())
+
+        # self.screen.blit(self.exit_button, (46, 657))
 
     def on_click(self, event):
         if self.active:
