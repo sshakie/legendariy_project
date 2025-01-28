@@ -8,11 +8,11 @@ class Game:
     def __init__(self, screen, attempts=5, len_word=5, active=False):
         self.screen = screen
         self.active = active
-        self.wallpaper = pygame.image.load('data/textures/wallpaper3 (hd).png')
+        self.wallpaper = pygame.image.load('data/textures/wallpaper3.png')
         self.attempts = attempts
         self.font = pygame.font.Font(None, 30)
         self.len_word = len_word
-        self.guessing = [{x: Cell(x, y, size, font_size, text_color) for x in range(self.len_word)} for y in range(self.attempts)] # TODO Сделать динамически изменяемый размер шрифт и цвет
+        self.guessing = [{x: Cell(x, y, 5, 15, (50, 50, 50)) for x in range(self.len_word)} for y in range(self.attempts)] # TODO Сделать динамически изменяемый размер шрифт и цвет
         self.count_string = 0  # Порядковый номер попытки
         self.input_word = str()
 
@@ -32,9 +32,9 @@ class Game:
         self.screen.blit(self.wallpaper, (0, 0))
         attempt_label = self.font.render(f'Попыток: {self.attempts}', True, (255, 255, 255))
         self.screen.blit(attempt_label, (100, 50))
-        for i in self.guessing:
+        for i in range(len(self.guessing)):
             for q in self.guessing[i].keys():
-                self.screen.blit(*i[q].get_rect_coord())
+                self.screen.blit(*self.guessing[i][q].get_rect_coord())
 
         for i in self.keyboard:
             self.screen.blit(*i.get_rect_coord())
@@ -88,7 +88,7 @@ class Cell(pygame.sprite.Sprite):
         self.rect = self.surf.get_rect(topleft=(x, y))
         pygame.draw.rect(self.surf, (255, 255, 255, 0), self.rect)
 
-        self.image = load_image('data/textures/ui1.png').subsurface(Кроп))  # TODO картинка когда клетка закрыта
+        self.image = load_image('data/textures/ui.png').subsurface((275, 715, 26, 23))  # TODO картинка когда клетка закрыта
 
         self.image = pygame.transform.scale(self.image, (self.size, self.size))
 
@@ -103,13 +103,13 @@ class Cell(pygame.sprite.Sprite):
         pygame.draw.rect(self.surf, (255, 255, 255, 0), self.rect)
 
         if self.type == 1:
-            self.image = load_image('data/textures/ui1.png').subsurface(
-                Кроп))  # TODO Путь до иконки с правильным ответом
-            elif self.type == 2:
-            self.image = load_image('data/textures/ui1.png').subsurface(
-                Кроп))  # TODO Путь до иконки "не на своем месте"
-            else:
-            self.image = load_image('data/textures/ui1.png').subsurface(Кроп))  # TODO путь до иконки "не верно"
+            self.image = load_image('data/textures/ui.png').subsurface(
+                (0, 715, 75, 63))  # TODO Путь до иконки с правильным ответом
+        elif self.type == 2:
+            self.image = load_image('data/textures/ui.png').subsurface(
+                (0, 651, 90, 63))  # TODO Путь до иконки "не на своем месте"
+        else:
+            self.image = load_image('data/textures/ui.png').subsurface((273, 651, 64, 63))  # TODO путь до иконки "не верно"
 
             self.image = pygame.transform.scale(self.image, (self.size, self.size))
             self.surf.blit(self.image, (0, 0))
