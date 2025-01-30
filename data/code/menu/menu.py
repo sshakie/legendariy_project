@@ -1,5 +1,5 @@
 import pygame
-from data.code.Button import MenuButton
+from data.code.Button import Button
 from data.code.class_config import Config
 
 
@@ -14,9 +14,9 @@ class Menu:
         self.config = Config()
         self.money = self.config.money
         self.money_label = self.font.render(self.money[6:], True, (100, 0, 0))
-        self.play_button = MenuButton(101, 380, 404, 118, 'data/textures/ui.png', 'Играть', 50, crop=(0, 245, 404, 118), selected_coords=(405, 245))
-        self.shop_button = MenuButton(101, 506, 403, 94, 'data/textures/ui.png', 'Ларёк', 50, crop=(0, 364, 403, 94), selected_coords=(404, 364))
-        self.exit_button = MenuButton(101, 623, 403, 97, 'data/textures/ui.png', '', 50, crop=(0, 459, 403, 97), selected_coords=(404, 459))
+        self.play_button = Button(101, 380, 404, 118, 'data/textures/ui.png', 'Играть', 50, crop=(0, 245, 404, 118), selected_coords=(405, 245))
+        self.shop_button = Button(101, 506, 403, 94, 'data/textures/ui.png', 'Ларёк', 50, crop=(0, 364, 403, 94), selected_coords=(404, 364))
+        self.exit_button = Button(101, 623, 403, 97, 'data/textures/ui.png', '', 50, crop=(0, 459, 403, 97), selected_coords=(404, 459))
 
     def render(self):
         self.screen.blit(self.wallpaper, (0, 0))

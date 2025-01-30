@@ -1,6 +1,6 @@
 import pygame
 
-from data.code.Button import load_image, KeyboardButton
+from data.code.Button import load_image, KeyboardButton, Button
 from data.code.game.logic import Logic
 
 
@@ -23,6 +23,29 @@ class Game:
 
         # Клавиатура
         self.keyboard = []  # TODO Сделать клавиатуру
+
+        for i, letter in enumerate('йцукенгшщзхъ'):
+            x_0 = 50
+            y_0 = 650
+            r = 50 # Расстояние между кнопками
+            kb = Button(x_0 + r * i, y_0, 20, 20, image_path, text=letter, 14, crop=()) # Картинка по умолчанию
+            self.keyboard.append(kb)
+
+
+        for i, letter in enumerate('фывапролджэ'):
+            x_0 = 50
+            y_0 = 650
+            r = 50 # Расстояние между кнопками
+            kb = Button(x_0 + r * i, y_0, 20, 20, image_path, text=letter, 14, crop=()) # Картинка по умолчанию
+            self.keyboard.append(kb)
+
+        for i, letter in enumerate('ячсмитьбю'):
+            x_0 = 50
+            y_0 = 650
+            r = 50 # Расстояние между кнопками
+            kb = Button(x_0 + r * i, y_0, 20, 20, image_path, text=letter, 14, crop=()) # Картинка по умолчанию
+            self.keyboard.append(kb)
+
 
         if len_word == 5:
             self.logic = Logic('data/dictionary/words-length-5.txt')
@@ -89,8 +112,10 @@ class Cell(pygame.sprite.Sprite):
         self.font_size = font_size
         self.text_color = text_color
 
-        self.size = size
+        self.text = None
 
+        self.size = size
+        self.font = pygame.font.Font(None, self.font_size)
         self.surf = pygame.Surface((self.size, self.size), pygame.SRCALPHA)
         self.rect = self.surf.get_rect(topleft=(x, y))
         pygame.draw.rect(self.surf, (255, 255, 255, 0), self.rect)
@@ -110,11 +135,9 @@ class Cell(pygame.sprite.Sprite):
         pygame.draw.rect(self.surf, (255, 255, 255, 0), self.rect)
 
         if self.type == 1:
-            self.image = load_image('data/textures/ui.png').subsurface(
-                (0, 715, 75, 63))  # TODO Путь до иконки с правильным ответом
+            self.image = load_image('data/textures/ui.png').subsurface((0, 715, 75, 63))  # TODO Путь до иконки с правильным ответом
         elif self.type == 2:
-            self.image = load_image('data/textures/ui.png').subsurface(
-                (0, 651, 90, 63))  # TODO Путь до иконки "не на своем месте"
+            self.image = load_image('data/textures/ui.png').subsurface( (0, 651, 90, 63))  # TODO Путь до иконки "не на своем месте"
         else:
             self.image = load_image('data/textures/ui.png').subsurface((273, 651, 64, 63))  # TODO путь до иконки "не верно"
 
@@ -122,11 +145,9 @@ class Cell(pygame.sprite.Sprite):
             self.surf.blit(self.image, (0, 0))
 
             # Настраиваем шрифт и текст
-            self.font = pygame.font.Font(self.letter, None, self.font_size)
             self.text = self.font.render(self.letter, True, self.text_color)
             text_x = self.size // 2 - self.text.get_width() // 2
             text_y = self.size // 2 - self.text.get_height() // 2
-
             # Рисуем текст
             self.surf.blit(self.text, (text_x, text_y))
 

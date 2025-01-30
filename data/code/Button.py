@@ -57,7 +57,7 @@ class KeyboardButton(pygame.sprite.Sprite):
         return self.line_text
 
 
-class MenuButton(pygame.sprite.Sprite):
+class Button(pygame.sprite.Sprite):
     def __init__(self, x, y, width, height, image_path, text, font_size, text_color=(0, 0, 0), crop: tuple[int, int, int, int]=None, selected_coords=(0, 0)):
         super().__init__()
         self.line_text = text
@@ -72,7 +72,7 @@ class MenuButton(pygame.sprite.Sprite):
         pygame.draw.rect(self.surf, (255, 255, 255, 0), self.rect)
 
         self.base_image = load_image(image_path).subsurface(crop)
-
+        self.selected_image = None
         if crop:
             self.image = self.base_image
             if self.selected_coords != (0, 0):
@@ -109,10 +109,16 @@ class MenuButton(pygame.sprite.Sprite):
 
     def selecting(self):
         self.surf = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
-        if self.check_cursor_position():
-            self.image = self.selected_image
+        if not (self.selected_image is None):
+            if self.check_cursor_position():
+                self.image = self.selected_image
+            else:
+                self.image = self.base_image
         else:
             self.image = self.base_image
         # Рисуем изображение и текст на кнопке
         self.surf.blit(self.image, (0, 0))
         self.surf.blit(self.text, (self.text_x, self.text_y))
+
+    def set_image(self, image_path, crop):
+        self.base_image = pygame.transform.scale(load_image(image_path).subsurface(crop), (self.width, self.height))
