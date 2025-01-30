@@ -25,25 +25,25 @@ class Game:
         self.keyboard = []  # TODO Сделать клавиатуру
 
         for i, letter in enumerate('йцукенгшщзхъ'):
-            x_0 = 50
-            y_0 = 650
-            r = 50 # Расстояние между кнопками
-            kb = Button(x_0 + r * i, y_0, 20, 20, image_path, text=letter, 14, crop=()) # Картинка по умолчанию
+            x_0 = 33
+            y_0 = 645
+            r = 45 # Расстояние между кнопками
+            kb = Button(x_0 + r * i, y_0, 40, 40, "data/textures/ui.png", letter, 30, crop=(228, 715, 43, 43)) # Картинка по умолчанию
             self.keyboard.append(kb)
 
 
         for i, letter in enumerate('фывапролджэ'):
-            x_0 = 50
-            y_0 = 650
-            r = 50 # Расстояние между кнопками
-            kb = Button(x_0 + r * i, y_0, 20, 20, image_path, text=letter, 14, crop=()) # Картинка по умолчанию
+            x_0 = 55
+            y_0 = 695
+            r = 45 # Расстояние между кнопками
+            kb = Button(x_0 + r * i, y_0, 40, 40, "data/textures/ui.png", letter, 30, crop=(228, 715, 43, 43)) # Картинка по умолчанию
             self.keyboard.append(kb)
 
         for i, letter in enumerate('ячсмитьбю'):
-            x_0 = 50
-            y_0 = 650
-            r = 50 # Расстояние между кнопками
-            kb = Button(x_0 + r * i, y_0, 20, 20, image_path, text=letter, 14, crop=()) # Картинка по умолчанию
+            x_0 = 100
+            y_0 = 745
+            r = 45 # Расстояние между кнопками
+            kb = Button(x_0 + r * i, y_0, 40, 40, "data/textures/ui.png", letter, 30, crop=(228, 715, 43, 43)) # Картинка по умолчанию
             self.keyboard.append(kb)
 
 
@@ -120,7 +120,7 @@ class Cell(pygame.sprite.Sprite):
         self.rect = self.surf.get_rect(topleft=(x, y))
         pygame.draw.rect(self.surf, (255, 255, 255, 0), self.rect)
 
-        self.image = load_image('data/textures/ui.png').subsurface((275, 715, 26, 23))  # TODO картинка когда клетка закрыта
+        self.image = load_image('data/textures/ui.png').subsurface((236, 724, 22, 22))  # TODO картинка когда клетка закрыта
 
         self.image = pygame.transform.scale(self.image, (self.size, self.size))
 
