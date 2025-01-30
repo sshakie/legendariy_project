@@ -1,6 +1,6 @@
 import pygame
 
-from data.code.Button import load_image, KeyboardButton, Button
+from data.code.Button import load_image, Button
 from data.code.game.logic import Logic
 
 
@@ -16,7 +16,7 @@ class Game:
         self.count_string = 0  # Порядковый номер попытки
         self.input_word = str()
 
-        self.exit_button = KeyboardButton(8, 6, 134, 39, (255, 255, 255), 'выйти', border_radius=2)
+        self.exit_button = Button(8, 6, 134, 39, 'data/textures/ui.png', 'выйти', 0, crop=(228, 759, 134, 39))
         self.line = pygame.image.load('data/textures/ui.png').subsurface((0, 557, 601, 93))
         self.attempts = 5
         self.font = pygame.font.Font(None, 50)
@@ -79,9 +79,12 @@ class Game:
         return False
 
     def on_click(self, event):
+        if self.active and self.exit_button.is_clicked(event):
+            return self.exit_button
+
         button = self.check_clicked(event)
         if button:
-            if isinstance(button, KeyboardButton):
+            if isinstance(button, Button):
                 btn_text = button.get_text()
                 if btn_text == 'backspace':
                     self.input_word = self.input_word[:-1]

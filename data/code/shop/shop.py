@@ -1,5 +1,5 @@
 import pygame
-from data.code.Button import Button, KeyboardButton
+from data.code.Button import Button
 from data.code.class_config import Config
 
 
@@ -34,7 +34,7 @@ class Shop:
         self.background_custom = Button(472, 512, 86, 59, 'data/textures/ui.png', 'фон', 30,
                                         crop=(0, 76, 86, 59))
 
-        self.exit_button = KeyboardButton(46, 657, 509, 75, (255, 255, 255), '<- назад', border_radius=2)
+        self.exit_button = Button(46, 657, 509, 75, 'data/textures/ui.png', '<- назад', 0, crop=(174, 41, 509, 75))
 
     def render(self):
         self.screen.blit(self.wallpaper, (0, 0))

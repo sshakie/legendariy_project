@@ -54,11 +54,11 @@ def main():
                     menu_window.active = True
                     shop_window.active = False
 
-            # elif game_window.on_click(event):
-            #     butt_text = game_window.on_click(event).get_text()
-            #     if butt_text == 'выход':
-            #         menu_window.active = True
-            #         game_window.active = False
+            elif game_window.on_click(event):
+                butt_text = game_window.on_click(event).get_text()
+                if butt_text == 'выйти':
+                    menu_window.active = True
+                    game_window.active = False
 
         # Логика переключения окон
         if menu_window.active:
