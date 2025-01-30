@@ -1,6 +1,6 @@
 import pygame
 
-from data.code.Button import load_image, Button
+from data.code.Button import load_image, KeyboardButton, Button
 from data.code.game.logic import Logic
 
 
@@ -12,7 +12,7 @@ class Game:
         self.attempts = attempts
         self.font = pygame.font.Font(None, 30)
         self.len_word = len_word
-        self.guessing = [{x: Cell(x, y, 5, 15, (50, 50, 50)) for x in range(self.len_word)} for y in range(self.attempts)] # TODO Сделать динамически изменяемый размер шрифт и цвет
+        self.guessing = [{x: Cell(75 + x * 92, 100 + y * 70, 95, 63, 50, (50, 50, 50)) for x in range(self.len_word)} for y in range(self.attempts)] # TODO Сделать динамически изменяемый размер шрифт и цвет
         self.count_string = 0  # Порядковый номер попытки
         self.input_word = str()
 
@@ -70,7 +70,7 @@ class Game:
             self.screen.blit(*i.get_rect_coord())
 
     def reset(self):
-        self.attempts = 5
+        self.attempts = 5 # TODO Так быть не должно
 
     def check_clicked(self, event):
         for i in self.keyboard:
@@ -89,24 +89,45 @@ class Game:
                 if btn_text == 'backspace':
                     self.input_word = self.input_word[:-1]
                 elif btn_text == 'enter':
-                    data = self.logic.check_input_word(self.input_word)
-                    if not data:  # Слова нет в словаре
-                        return  # TODO хз че делать
-                    else:
-                        for i, v in sorted(data.items(), key=lambda m: m[0]):
-                            if v is None:
-                                pass  # TODO Если буквы нет в искомом слове
-                            elif v == 'неверное положение':
-                                pass  # TODO Если у буквы не верное положение
-                            elif isinstance(v, list):
-                                pass  # TODO Если у буквы нормальное положение
+                    self.return_press()
                 else:
                     if len(self.input_word) < self.len_word:
                         self.input_word += btn_text
 
 
+        # Обработка нажатий с клавиатуры
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_BACKSPACE:
+                self.input_word = self.input_word[:-1]
+                self.guessing[self.count_string][len(self.input_word)].set_letter('', -1)
+                print(self.input_word)
+            elif event.key == pygame.K_RETURN:
+                self.return_press()
+            elif event.unicode in 'абвгдежзийклмнопрстуфхцчшщъыьэюя':
+                self.input_word += event.unicode
+
+        for i, letter in enumerate(self.input_word):
+            self.guessing[self.count_string][i].set_letter(letter, -1)
+
+    def return_press(self):
+        data = self.logic.check_input_word(self.input_word)
+        if not data:  # Слова нет в словаре
+            return  # TODO хз че делать
+        else:
+            for i, v in sorted(data.items(), key=lambda m: m[0]):
+                if v is None:
+                    self.guessing[self.count_string][self.input_word.index(i)].set_letter(i, 0)
+                elif v == 'неверное положение':
+                    self.guessing[self.count_string][self.input_word.index(i)].set_letter(i, 2)
+                elif isinstance(v, list):
+                    for q in v:
+                        self.guessing[self.count_string][q].set_letter(i, 1)
+
+        self.count_string += 1
+        self.input_word = ''
+
 class Cell(pygame.sprite.Sprite):
-    def __init__(self, x: int, y: int, size: int, font_size, text_color):
+    def __init__(self, x: int, y: int, width: int, height: int, font_size, text_color):
         super().__init__()
         self.x = x
         self.y = y
@@ -117,41 +138,51 @@ class Cell(pygame.sprite.Sprite):
 
         self.text = None
 
-        self.size = size
+        self.width = width
+        self.height = height
+
+        self.corrected_width = width - 10
+        self.corrected_height = height - 10
+
         self.font = pygame.font.Font(None, self.font_size)
-        self.surf = pygame.Surface((self.size, self.size), pygame.SRCALPHA)
+        self.surf = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
         self.rect = self.surf.get_rect(topleft=(x, y))
+        self.surf.fill((0, 0, 0))
         pygame.draw.rect(self.surf, (255, 255, 255, 0), self.rect)
 
         self.image = load_image('data/textures/ui.png').subsurface((236, 724, 22, 22))  # TODO картинка когда клетка закрыта
 
-        self.image = pygame.transform.scale(self.image, (self.size, self.size))
+        self.image = pygame.transform.scale(self.image, (self.corrected_width, self.corrected_height))
 
-        self.surf.blit(self.image, (0, 0))
+        self.surf.blit(self.image, (5, 5))
 
-    def set_letter(self, letter, type):
+    def set_letter(self, letter, type, text_offset=(0, 0)):
         self.letter = letter
         self.type = type
 
-        self.surf = pygame.Surface((self.size, self.size), pygame.SRCALPHA)
-        self.rect = self.surf.get_rect(topleft=(self.size, self.size))
-        pygame.draw.rect(self.surf, (255, 255, 255, 0), self.rect)
+        # Очистка поверхности
+        self.surf.fill((0, 0, 0))
+        self.rect = self.surf.get_rect(topleft=(self.x, self.y))
 
-        if self.type == 1:
-            self.image = load_image('data/textures/ui.png').subsurface((0, 715, 75, 63))  # TODO Путь до иконки с правильным ответом
+        # Выбор изображения в зависимости от типа
+        if self.type == -1:
+            pass
+        elif self.type == 1:
+            self.image = load_image('data/textures/ui.png').subsurface((0, 715, 75, 63))  # Правильная буква
         elif self.type == 2:
-            self.image = load_image('data/textures/ui.png').subsurface( (0, 651, 90, 63))  # TODO Путь до иконки "не на своем месте"
+            self.image = load_image('data/textures/ui.png').subsurface((0, 651, 90, 63))  # Неправильная позиция
         else:
-            self.image = load_image('data/textures/ui.png').subsurface((273, 651, 64, 63))  # TODO путь до иконки "не верно"
+            self.image = load_image('data/textures/ui.png').subsurface((273, 651, 64, 63))  # Неправильная буква
 
-            self.image = pygame.transform.scale(self.image, (self.size, self.size))
-            self.surf.blit(self.image, (0, 0))
+        # Масштабируем изображение и накладываем на поверхность
+        self.image = pygame.transform.scale(self.image, (self.corrected_width, self.corrected_height))
+        self.surf.blit(self.image, (5, 5))
 
-            # Настраиваем шрифт и текст
+        # Отрисовка текста
+        if self.letter:
             self.text = self.font.render(self.letter, True, self.text_color)
-            text_x = self.size // 2 - self.text.get_width() // 2
-            text_y = self.size // 2 - self.text.get_height() // 2
-            # Рисуем текст
+            text_x = self.width // 2 - self.text.get_width() // 2 + text_offset[0]
+            text_y = self.height // 2 - self.text.get_height() // 2 + text_offset[1]
             self.surf.blit(self.text, (text_x, text_y))
 
     def get_rect_coord(self):
