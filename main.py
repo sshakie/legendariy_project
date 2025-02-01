@@ -16,10 +16,11 @@ timer = 120
 alpha = 0
 exiting = False
 running = True
+fps = 60
 
 
 def main():
-    global ws_width, old_scene, new_scene, start_transition, stop_transition, black_screen, game_starting, timer, alpha, exiting, running
+    global ws_width, old_scene, new_scene, start_transition, stop_transition, black_screen, game_starting, timer, alpha, exiting, running, fps
     pygame.init()
     pygame.display.set_caption('Wordy')
     size = width, height = 600, 800
@@ -28,7 +29,6 @@ def main():
     shop_window = Shop(screen)
     game_window = Game(screen)
 
-    fps = 60
     clock = pygame.time.Clock()
     while running:
         for event in pygame.event.get():
@@ -98,7 +98,7 @@ def main():
 
 
 def transition():  # Переход между сценами
-    global ws_width, old_scene, new_scene, start_transition, stop_transition, black_screen, game_starting, timer, alpha, exiting, running
+    global ws_width, old_scene, new_scene, start_transition, stop_transition, black_screen, game_starting, timer, alpha, exiting, running, fps
     if start_transition:
         ws_width += 50
         if ws_width == 301:
