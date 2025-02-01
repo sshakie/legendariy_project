@@ -5,9 +5,12 @@ from data.code.class_config import Config
 
 
 class Shop:
-    def __init__(self, screen, active=False):
+    def __init__(self, screen, money, active=False):
         self.screen = screen
         self.active = active
+        self.money = money
+        self.text_font = None
+        self.font = pygame.font.Font(self.text_font, 30)
         self.clock = pygame.time.Clock()
         self.fps = 60
 
@@ -21,13 +24,7 @@ class Shop:
         self.separator2 = pygame.image.load('data/textures/ui.png').subsurface((0, 115, 600, 40))
         self.upgrade_text = pygame.image.load('data/textures/ui.png').subsurface((299, 0, 294, 57))
         self.customization_text = pygame.image.load('data/textures/ui.png').subsurface((299, 58, 335, 56))
-
-        # Загрузка конфига
-        self.config = Config()
-        self.money = self.config.money
-        self.text_font = None
-        self.font = pygame.font.Font(self.text_font, 30)
-        self.money_label = self.font.render(self.money[6:], True, (100, 0, 0))
+        self.money_label = self.font.render(str(self.money), True, (100, 0, 0))
 
         # Кнопки
         self.mistake_upgrade = Button(29, 197, 134, 75, 'право на ошибку', 20, type=4)
@@ -44,7 +41,7 @@ class Shop:
         self.all_sprites.update()
         self.screen.blit(self.no_problems, (0, 0))
         self.screen.blit(self.coin, (551, 17))
-        self.screen.blit(self.money_label, (535, 24))
+        self.screen.blit(self.money_label, (545 - self.money_label.get_width(), 24))
         self.screen.blit(self.separator1, (0, 160))
         self.screen.blit(self.separator2, (0, 390))
         self.screen.blit(self.upgrade_text, (143, 119))
@@ -61,7 +58,7 @@ class Shop:
 
     def on_click(self, event):  # Функция нажатия кнопки
         if self.active:
-            for button in [self.letter_upgrade, self.game_upgrade, self.button_custom,
+            for button in [self.mistake_upgrade, self.letter_upgrade, self.game_upgrade, self.button_custom,
                            self.detail_custom, self.letter_custom, self.exit_button]:
                 if button.is_clicked(event):
                     return button
@@ -73,3 +70,8 @@ class Shop:
                            self.button_custom, self.detail_custom, self.letter_custom,
                            self.background_custom, self.exit_button]:
                 button.selecting()
+
+    def update(self, money):  # Подгрузка данных из main для обновления
+        self.money = money
+
+        self.money_label = self.font.render(str(self.money), True, (100, 0, 0))
