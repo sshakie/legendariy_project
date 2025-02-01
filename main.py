@@ -35,6 +35,9 @@ def main():
     shop_window = Shop(screen, money)
     game_window = Game(screen)
 
+    ui = pygame.mixer.Sound('data/sounds/ui sound.wav')
+    ui.play()
+
     clock = pygame.time.Clock()
     while running:
         for event in pygame.event.get():
@@ -58,21 +61,25 @@ def main():
             elif shop_window.on_click(event):
                 butt_text = shop_window.on_click(event).get_text()
                 if butt_text == 'право на ошибку':
-                    if buy(15):
+                    if buy(15000000):
                         print(1)
                 elif butt_text == 'раскрыть букву':
-                    if buy(10):
+                    if buy(10000000):
                         print(2)
                 elif butt_text == 'игра-капча':
                     money += 15
                 elif butt_text == 'кнопки':
-                    pass
+                    if buy(20000000):
+                        print(3)
                 elif butt_text == 'детали':
-                    pass
+                    if buy(17000000):
+                        print(4)
                 elif butt_text == 'буквы':
-                    pass
+                    if buy(35000000):
+                        print(5)
                 elif butt_text == 'фон':
-                    pass
+                    if buy(6000000):
+                        print(6)
                 elif butt_text == 'назад':
                     old_scene = shop_window
                     new_scene = menu_window
