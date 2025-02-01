@@ -25,32 +25,31 @@ def main():
 
             if menu_window.on_click(event):
                 butt_text = menu_window.on_click(event).get_text()
-                if butt_text == 'Играть':
+                if butt_text == 'играть':
                     game_window.active = True
                     menu_window.active = False
-                elif butt_text == 'Ларёк':
+                elif butt_text == 'ларек':
                     shop_window.active = True
                     menu_window.active = False
-                else:
+                elif butt_text == 'выход':
                     running = False
-                    # Нажата кнопка выхода
             elif shop_window.on_click(event):
                 butt_text = shop_window.on_click(event).get_text()
                 if butt_text == '-1 ошибка':
                     pass
                 elif butt_text == '+1 буква':
                     pass
-                elif butt_text == 'Игра':
+                elif butt_text == 'игра':
                     pass
-                elif butt_text == 'Кнопки':
+                elif butt_text == 'кнопки':
                     pass
-                elif butt_text == 'Детали':
+                elif butt_text == 'детали':
                     pass
-                elif butt_text == 'Буквы':
+                elif butt_text == 'буквы':
                     pass
-                elif butt_text == 'Фон':
+                elif butt_text == 'фон':
                     pass
-                elif butt_text == '<- назад':
+                elif butt_text == 'назад':
                     menu_window.active = True
                     shop_window.active = False
 
@@ -65,8 +64,10 @@ def main():
             menu_window.selecting_button()
             menu_window.render()
         elif shop_window.active:
+            shop_window.selecting_button()
             shop_window.render()
         elif game_window.active:
+            game_window.selecting_button()
             game_window.render()
 
         clock.tick(fps)
