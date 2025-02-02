@@ -1,6 +1,5 @@
 import pygame
 from data.code.Button import Button, load_image
-from data.code.class_config import Config
 from data.code.animating import AnimatedSprite
 
 
@@ -9,7 +8,7 @@ class Menu:
         self.screen = screen
         self.active = active
         self.money = money
-        self.text_font = None
+        self.text_font = 'data/myy.ttf'
         self.font = pygame.font.Font(self.text_font, 30)
         self.clock = pygame.time.Clock()
         self.fps = 56

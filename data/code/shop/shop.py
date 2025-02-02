@@ -1,7 +1,6 @@
 import pygame
 from data.code.Button import Button, load_image
 from data.code.animating import AnimatedSprite
-from data.code.class_config import Config
 
 
 class Shop:
@@ -9,7 +8,7 @@ class Shop:
         self.screen = screen
         self.active = active
         self.money = money
-        self.text_font = None
+        self.text_font = 'data/myy.ttf'
         self.font = pygame.font.Font(self.text_font, 30)
         self.clock = pygame.time.Clock()
         self.fps = 60
@@ -27,9 +26,9 @@ class Shop:
         self.money_label = self.font.render(str(self.money), True, (100, 0, 0))
 
         # Кнопки
-        self.mistake_upgrade = Button(29, 197, 134, 75, 'право на ошибку', 20, type=4)
-        self.letter_upgrade = Button(189, 196, 134, 75, 'раскрыть букву', 20, type=4)
-        self.game_upgrade = Button(29, 277, 134, 75, 'игра-капча', 20, type=4)
+        self.mistake_upgrade = Button(29, 197, 134, 75, 'право на ошибку', 15, type=4)
+        self.letter_upgrade = Button(189, 196, 134, 75, 'раскрыть букву', 15, type=4)
+        self.game_upgrade = Button(29, 277, 134, 75, 'игра-капча', 15, type=4)
         self.button_custom = Button(111, 427, 134, 75, 'кнопки', 30, type=4)
         self.detail_custom = Button(271, 427, 134, 75, 'детали', 30, type=4)
         self.letter_custom = Button(431, 427, 134, 75, 'буквы', 30, type=4)
