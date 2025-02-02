@@ -35,6 +35,10 @@ class Shop:
         self.background_custom = Button(472, 512, 86, 59, 'фон', 30, type=5)
         self.exit_button = Button(46, 657, 509, 75, 'назад', 0, type=6)
 
+        # Звуки
+        self.sfx_select = pygame.mixer.Sound('data/sounds/select.wav')
+        self.sfx_select2 = pygame.mixer.Sound('data/sounds/select_2.wav')
+
     def render(self):  # Функция для рендера интерфейса
         self.all_sprites.draw(self.screen)
         self.all_sprites.update()
@@ -58,7 +62,7 @@ class Shop:
     def on_click(self, event):  # Функция нажатия кнопки
         if self.active:
             for button in [self.mistake_upgrade, self.letter_upgrade, self.game_upgrade, self.button_custom,
-                           self.detail_custom, self.letter_custom, self.exit_button]:
+                           self.detail_custom, self.letter_custom, self.background_custom, self.exit_button]:
                 if button.is_clicked(event):
                     return button
         return False
@@ -68,7 +72,11 @@ class Shop:
             for button in [self.mistake_upgrade, self.letter_upgrade, self.game_upgrade,
                            self.button_custom, self.detail_custom, self.letter_custom,
                            self.background_custom, self.exit_button]:
-                button.selecting()
+                if button.selecting():
+                    if button == self.exit_button:
+                        self.sfx_select2.play()
+                    else:
+                        self.sfx_select.play()
 
     def update(self, money):  # Подгрузка данных из main для обновления
         self.money = money

@@ -26,6 +26,9 @@ class Menu:
         self.shop_button = Button(101, 506, 403, 94, 'ларек', 0, type=2)
         self.exit_button = Button(101, 623, 403, 97, 'выход', 0, type=3)
 
+        # Звуки
+        self.sfx_select2 = pygame.mixer.Sound('data/sounds/select_2.wav')
+
     def render(self):  # Функция для рендера интерфейса
         self.all_sprites.draw(self.screen)
         self.all_sprites.update()
@@ -47,7 +50,8 @@ class Menu:
     def selecting_button(self):  # Функция для выделения кнопки
         if self.active:
             for button in [self.play_button, self.shop_button, self.exit_button]:
-                button.selecting()
+                if button.selecting():
+                    self.sfx_select2.play()
 
     def update(self, money):  # Подгрузка данных из main для обновления
         self.money = money
