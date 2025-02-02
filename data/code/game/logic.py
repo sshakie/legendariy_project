@@ -37,7 +37,7 @@ class Logic:
 
         input_word = input_word.upper()
         if False:
-            pass# if input_word not in self.dictionary:  # Если слова нет в словаре.
+            pass # if input_word not in self.dictionary:  # Если слова нет в словаре.
         #     # return False
         else:
             data = {}
@@ -57,3 +57,5 @@ class Logic:
                     else:
                         data[input_word[i].lower()] = 'неверное положение'
         return data
+    def get_right_word(self):
+        return self.word

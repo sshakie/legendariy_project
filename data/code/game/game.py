@@ -13,7 +13,6 @@ class Game:
         self.fps = 60
         self.attempts = attempts
         self.len_word = len_word
-        self.guessing = [{x: Cell(75 + x * 92, 100 + y * 70, 95, 63, 50, (50, 50, 50)) for x in range(self.len_word)} for y in range(self.attempts)] # TODO Сделать динамически изменяемый размер шрифт и цвет
         self.count_string = 0  # Порядковый номер попытки
         self.input_word = str()
 
@@ -24,14 +23,24 @@ class Game:
         self.line = pygame.image.load('data/textures/ui.png').subsurface((0, 156, 601, 93))
         self.exit_button = Button(8, 6, 134, 39, 'выйти', 0, type=7)
 
+        # Интерфейс выигрыша
+        self.win_display = load_image('data/textures/wallpapers/win-screen.png')
+        self.lose_display = load_image('data/textures/wallpapers/gameover-screen.png')
+
+        self.exit_button_2 = Button(8, 6, 134, 39, 'выйти', 0, type=7)
+
+        self.win_lose_flg = None
+
         # Текст
         self.text_font = 'data/myy.ttf'
         self.font = pygame.font.Font(self.text_font, 50)
         self.attempt_label = self.font.render(f'Попыток: {self.attempts}', True, (0, 0, 0))
 
         # Настройка
-        self.guessing = [{x: Cell(x, y, 5, 15, (50, 50, 50)) for x in range(self.len_word)} for y in
-                         range(self.attempts)]  # TODO Сделать динамически изменяемый размер шрифт и цвет
+        self.guessing = [
+            {x: Cell(75 + x * 92, 100 + y * 70, 95, 63, self.text_font, 50, text_color=(50, 50, 50)) for x in range(self.len_word)} for
+            y in range(self.attempts)]  # TODO Сделать динамически изменяемый размер шрифт и цвет
+        # TODO Сделать динамически изменяемый размер шрифт и цвет
         self.keyboard = []  # TODO Сделать клавиатуру
         self.logic = Logic(f'data/dictionary/words-length-{self.len_word}.txt')
 
@@ -62,6 +71,13 @@ class Game:
                 self.screen.blit(*self.guessing[i][q].get_rect_coord())
         for i in self.keyboard:
             self.screen.blit(*i.get_rect_coord())
+
+        if self.win_lose_flg is None:
+            return
+        elif self.win_lose_flg is True: # Выигрыш
+            self.screen.blit(self.win_display, (0, 0))
+        elif self.win_lose_flg is False:
+            self.screen.blit(self.lose_display, (0, 0))
 
     def selecting_button(self):  # Функция для выделения кнопки
         if self.active:
@@ -101,6 +117,10 @@ class Game:
             elif event.unicode in 'абвгдежзийклмнопрстуфхцчшщъыьэюя':
                 self.input_word += event.unicode
 
+        if len(self.input_word) > self.len_word:
+            self.input_word = self.input_word[0:self.len_word]
+
+        self.input_word = self.input_word.lower()
         for i, letter in enumerate(self.input_word):
             self.guessing[self.count_string][i].set_letter(letter, -1)
 
@@ -117,3 +137,14 @@ class Game:
                 elif isinstance(v, list):
                     for q in v:
                         self.guessing[self.count_string][q].set_letter(i, 1)
+        self.count_string += 1
+        self.check_win()
+        self.input_word = ''
+
+    def check_win(self): # TODO Придумать адекватное название метода
+        if self.count_string < self.attempts:
+            if self.input_word == self.logic.get_right_word().lower():
+                self.win_lose_flg = True
+        else:
+            self.win_lose_flg = False
+            # Проигрыш
