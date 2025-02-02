@@ -130,7 +130,7 @@ class Game:
 
     def return_press(self):
         data = self.logic.check_input_word(self.input_word)
-        if not data:  # Слова нет в словаре
+        if not data or len(self.input_word) < int(self.len_word):  # Слова нет в словаре
             return  # TODO хз че делать
         else:
             for i, v in sorted(data.items(), key=lambda m: m[0]):
@@ -142,6 +142,8 @@ class Game:
                     for q in v:
                         self.guessing[self.count_string][q].set_letter(i, 1)
         self.count_string += 1
+        self.attempts -= 1
+        self.attempt_label = self.font.render(f'Попыток: {self.attempts}', True, (0, 0, 0))
         self.check_win()
         self.input_word = ''
 
