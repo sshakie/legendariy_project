@@ -2,60 +2,35 @@ import random
 
 
 class Logic:
-    def __init__(self, dictionary_path=None, word=None):
+    def __init__(self, dictionary_path=None):
 
         try:
-            with open(dictionary_path, 'r') as dictionary:
-                self.dictionary = dictionary.readlines()
-        except Exception:  # TODO Найти исключение и вписать его если файл пустой
-            pass  # TODO Вызывать окно если произошла ошибка
+            with open(dictionary_path, 'r', encoding='utf-8') as dictionary:
+                self.dictionary = dictionary.read().split('\n')
+        except Exception:
+            pass
 
-        if word is None:
-            self.word = 'АРБУЗ'# random.choice(self.dictionary)
-        else:
-            self.word = word
-
-        self.right_letters = {}  # Ключ - буква, значение - правильные индексы
-
-        for index in range(len(self.word)):
-            if self.word[index] not in self.right_letters.keys():
-                self.right_letters[self.word[index]] = [index]
-            else:
-                self.right_letters[self.word[index]].append(index)
-
-        self.wrong_letters = []
+        self.word = random.choice(self.dictionary)
+        print(self.word)
 
 
-    def get_wrong_letters(self) -> list:
-        return self.wrong_letters
-
-    def check_input_word(self, input_word: str) -> bool | dict:
+    def check_input_word(self, input_word: str) -> list | bool:
         """:return False если слова нет в словаре.
-           :return dict[str] = list[int] | None | str Если слово есть в словаре. None - если буквы нет в слове,
-            список с индексами этих букв, если буква стоит в правильном месте, строку 'неверное положение'
-            если положение неверное"""
+           :return list[bool | str] False Если буквы нет в слове, True если есть. 'неверное положение' если не верное попложение"""
 
-        input_word = input_word.upper()
-        if False:
-            pass # if input_word not in self.dictionary:  # Если слова нет в словаре.
-        #     # return False
+        input_word = input_word.lower()
+        if input_word not in self.dictionary:  # Если слова нет в словаре.
+            return False
         else:
-            data = {}
-            for i in range(len(input_word)):
-                if input_word[i] not in self.right_letters.keys():
-                    self.wrong_letters.append(input_word[i])
-                    data[input_word[i].lower()] = None
+            data = []
+            for i, letter in enumerate(input_word):
+                if letter not in self.word:
+                    data.append(False) # Если буквы нет в слове
+                elif letter != self.word[i]:
+                    data.append('неверное положение')
                 else:
-                    if i in self.right_letters[input_word[i]]:
-                        if input_word[i] not in data.keys():
-                            data[input_word[i].lower()] = [i]
-                        else:
-                            if not isinstance(data[input_word[i]], str):
-                                data[input_word[i].lower()].append(i)
-                            else:
-                                data[input_word[i].lower()] = [i]
-                    else:
-                        data[input_word[i].lower()] = 'неверное положение'
+                    data.append(True) # Буква на своем месте
+
         return data
     def get_right_word(self):
         return self.word
