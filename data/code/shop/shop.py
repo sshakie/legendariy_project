@@ -62,7 +62,7 @@ class Shop:
     def on_click(self, event):  # Функция нажатия кнопки
         if self.active:
             for button in [self.mistake_upgrade, self.letter_upgrade, self.game_upgrade, self.button_custom,
-                           self.detail_custom, self.letter_custom, self.exit_button]:
+                           self.detail_custom, self.letter_custom, self.background_custom, self.exit_button]:
                 if button.is_clicked(event):
                     return button
         return False

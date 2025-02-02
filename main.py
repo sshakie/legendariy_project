@@ -7,7 +7,16 @@ from data.code.shop.shop import Shop
 running = True
 fps = 60
 with open('data/config') as config:
-    money = int(config.read().split('\n')[0].split()[-1])
+    config = config.read()
+    money = int(config.split('\n')[0].split()[-1])
+    button_custom = bool(int(config.split('\n')[1].split()[-1]))
+    details_custom = bool(int(config.split('\n')[2].split()[-1]))
+    letter_custom = bool(int(config.split('\n')[3].split()[-1]))
+    wallpaper_can_buy = bool(int(config.split('\n')[4].split()[-1]))
+    wallpaper_custom = bool(int(config.split('\n')[5].split()[-1]))
+    mistake_thing = int(config.split('\n')[6].split()[-1])
+    letter_thing = int(config.split('\n')[6].split()[-1])
+
 # Для перехода между сценами
 old_scene = None
 new_scene = None
@@ -30,9 +39,16 @@ sfx_transition = pygame.mixer.Sound('data/sounds/transition.wav')
 sfx_success = pygame.mixer.Sound('data/sounds/shop/success.wav')
 sfx_fail = pygame.mixer.Sound('data/sounds/shop/fail.wav')
 
+menu_window = ''
+shop_window = ''
+game_window = ''
+
 
 def main():
-    global ws_width, old_scene, new_scene, start_transition, stop_transition, black_screen, game_starting, timer, transition_alpha, exiting, running, fps, k, money, glow_alpha, glow_color
+    global ws_width, old_scene, new_scene, start_transition, stop_transition, black_screen, glow_color
+    global game_starting, timer, transition_alpha, exiting, running, fps, k, money, glow_alpha
+    global button_custom, details_custom, letter_custom, wallpaper_can_buy, wallpaper_custom, mistake_thing, letter_thing
+    global menu_window, shop_window, game_window
     pygame.display.set_caption('Wordy')
     size = width, height = 600, 800
     screen = pygame.display.set_mode(size, pygame.NOFRAME, pygame.SRCALPHA)
@@ -46,12 +62,11 @@ def main():
     sfx_click = pygame.mixer.Sound('data/sounds/click.wav')
 
     clock = pygame.time.Clock()
+    update_shop_buttons()
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                with open('data/config', 'w') as config:
-                    config.write(f'money {money}')
-                running = False
+                exiting = True
 
             if menu_window.on_click(event):
                 butt_text = menu_window.on_click(event).get_text()
@@ -71,31 +86,38 @@ def main():
                 butt_text = shop_window.on_click(event).get_text()
                 if butt_text == 'право на ошибку':
                     if buy(10):
-                        print(1)
+                        mistake_thing += 1
                 elif butt_text == 'раскрыть букву':
                     if buy(25):
-                        print(2)
+                        letter_thing += 1
                 elif butt_text == 'игра-капча':
                     money += 15
                 elif butt_text == 'кнопки':
-                    if buy(30):
-                        print(3)
+                    if button_custom is False:
+                        if buy(30):
+                            button_custom = True
                 elif butt_text == 'детали':
-                    if buy(45):
-                        print(4)
+                    if details_custom is False:
+                        if buy(45):
+                            details_custom = True
                 elif butt_text == 'буквы':
-                    if buy(50):
-                        print(5)
+                    if letter_custom is False:
+                        if buy(50):
+                            letter_custom = True
                 elif butt_text == 'фон':
-                    if buy(65):
-                        print(6)
+                    if wallpaper_can_buy and wallpaper_custom is False:
+                        if buy(65):
+                            wallpaper_custom = True
+
                 elif butt_text == 'назад':
                     old_scene = shop_window
                     new_scene = menu_window
                     start_transition = True
                     sfx_click.play()
+
                 menu_window.update(money)
                 shop_window.update(money)
+                update_shop_buttons()
 
             elif game_window.on_click(event):
                 butt_text = game_window.on_click(event).get_text()
@@ -135,7 +157,9 @@ def main():
 
 
 def transition():  # Переход между сценами
-    global ws_width, old_scene, new_scene, start_transition, stop_transition, black_screen, game_starting, timer, transition_alpha, exiting, running, fps, k, money, glow_alpha, glow_color, sfx_exit, sfx_transition
+    global ws_width, old_scene, new_scene, start_transition, stop_transition, black_screen, glow_color
+    global game_starting, timer, transition_alpha, exiting, running, fps, k, money, glow_alpha
+    global sfx_exit, sfx_transition
     if start_transition:
         if ws_width == 1:
             sfx_transition.play()
@@ -166,7 +190,14 @@ def transition():  # Переход между сценами
         transition_alpha += 5
         if transition_alpha == 250:
             with open('data/config', 'w') as config:
-                config.write(f'money {money}')
+                config.write(f'money {money}\n'
+                             f'button {int(button_custom)}\n'
+                             f'details {int(details_custom)}\n'
+                             f'letter {int(letter_custom)}\n'
+                             f'wallpaper {int(wallpaper_custom)}\n'
+                             f'can_wallpaper {int(wallpaper_can_buy)}\n'
+                             f'mistake {mistake_thing}\n'
+                             f'letter {letter_thing}')
             running = False
 
 
@@ -181,6 +212,22 @@ def buy(cost):
         sfx_fail.play()
     glow_alpha = min(glow_alpha + 50, 150)
     return glow_color == [0, 255, 0]
+
+
+def update_shop_buttons():
+    global button_custom, details_custom, letter_custom, wallpaper_can_buy, wallpaper_custom, mistake_thing, letter_thing
+    global menu_window, shop_window, game_window
+    if button_custom:
+        shop_window.button_custom.set_image((270, 261, 134, 75), 405)
+    if details_custom:
+        shop_window.detail_custom.set_image((270, 261, 134, 75), 405)
+    if letter_custom:
+        shop_window.letter_custom.set_image((270, 261, 134, 75), 405)
+    if wallpaper_custom:
+        shop_window.background_custom.set_image((174, 337, 86, 59), 261)
+    if button_custom and details_custom and letter_custom and wallpaper_can_buy is False:
+        shop_window.background_custom.set_image((0, 337, 86, 59), 87)
+        wallpaper_can_buy = True
 
 
 if __name__ == '__main__':
