@@ -21,6 +21,7 @@ class Button(pygame.sprite.Sprite):
         super().__init__()
         self.width = width
         self.height = height
+        self.selected = False
         self.text = text
         self.text_font = 'data/myy.ttf'
 
@@ -80,14 +81,18 @@ class Button(pygame.sprite.Sprite):
         return self.text
 
     def selecting(self):  # Функция для замены на текстуру выделенной кнопки/вовращение на стандартную
+        changed = self.selected
         if self.check_cursor_position():
             self.image = self.selected_image
+            self.selected = True
         else:
             self.image = self.base_image
+            self.selected = False
 
         # Рендер
         self.surf.blit(self.image, (0, 0))
         self.surf.blit(self.text_label, (self.text_x, self.text_y))
+        return changed != self.selected and self.selected
 
     def set_image(self, crop: tuple[int, int, int, int] = None,
                   selected_crop=None):  # Функция для постановки новых текстурок

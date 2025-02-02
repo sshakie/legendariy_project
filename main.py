@@ -24,10 +24,15 @@ ws_width = 1
 timer = 0
 k = 4
 
+pygame.init()
+sfx_exit = pygame.mixer.Sound('data/sounds/menu/end.wav')
+sfx_transition = pygame.mixer.Sound('data/sounds/transition.wav')
+sfx_success = pygame.mixer.Sound('data/sounds/shop/success.wav')
+sfx_fail = pygame.mixer.Sound('data/sounds/shop/fail.wav')
+
 
 def main():
     global ws_width, old_scene, new_scene, start_transition, stop_transition, black_screen, game_starting, timer, transition_alpha, exiting, running, fps, k, money, glow_alpha, glow_color
-    pygame.init()
     pygame.display.set_caption('Wordy')
     size = width, height = 600, 800
     screen = pygame.display.set_mode(size, pygame.NOFRAME, pygame.SRCALPHA)
@@ -35,8 +40,10 @@ def main():
     shop_window = Shop(screen, money)
     game_window = Game(screen)
 
-    ui = pygame.mixer.Sound('data/sounds/ui sound.wav')
-    ui.play()
+    # Звуки
+    sfx_start = pygame.mixer.Sound('data/sounds/menu/start.wav')
+    sfx_start.play()
+    sfx_click = pygame.mixer.Sound('data/sounds/click.wav')
 
     clock = pygame.time.Clock()
     while running:
@@ -52,10 +59,12 @@ def main():
                     game_starting = True
                     game_window.active = True
                     menu_window.active = False
+                    sfx_click.play()
                 elif butt_text == 'ларек':
                     old_scene = menu_window
                     new_scene = shop_window
                     start_transition = True
+                    sfx_click.play()
                 elif butt_text == 'выход':
                     exiting = True
             elif shop_window.on_click(event):
@@ -84,7 +93,7 @@ def main():
                     old_scene = shop_window
                     new_scene = menu_window
                     start_transition = True
-
+                    sfx_click.play()
                 menu_window.update(money)
                 shop_window.update(money)
 
@@ -95,6 +104,7 @@ def main():
                     game_window.active = False
                     timer, transition_alpha, k = 60, 255, 4
                     game_starting = True
+                sfx_click.play()
 
         # Логика переключения окон
         if menu_window.active:
@@ -125,8 +135,10 @@ def main():
 
 
 def transition():  # Переход между сценами
-    global ws_width, old_scene, new_scene, start_transition, stop_transition, black_screen, game_starting, timer, transition_alpha, exiting, running, fps, k, money, glow_alpha, glow_color
+    global ws_width, old_scene, new_scene, start_transition, stop_transition, black_screen, game_starting, timer, transition_alpha, exiting, running, fps, k, money, glow_alpha, glow_color, sfx_exit, sfx_transition
     if start_transition:
+        if ws_width == 1:
+            sfx_transition.play()
         ws_width += 50
         if ws_width == 301:
             old_scene.active = False
@@ -149,7 +161,9 @@ def transition():  # Переход между сценами
                 game_starting = False
                 k = 1
     if exiting:
-        transition_alpha += 10
+        if transition_alpha == 0:
+            sfx_exit.play()
+        transition_alpha += 5
         if transition_alpha == 250:
             with open('data/config', 'w') as config:
                 config.write(f'money {money}')
@@ -157,12 +171,14 @@ def transition():  # Переход между сценами
 
 
 def buy(cost):
-    global money, glow_color, glow_alpha
+    global money, glow_color, glow_alpha, sfx_success, sfx_fail
     if money - cost >= 0:
         money -= cost
         glow_color = [0, 255, 0]
+        sfx_success.play()
     else:
         glow_color = [255, 0, 0]
+        sfx_fail.play()
     glow_alpha = min(glow_alpha + 50, 150)
     return glow_color == [0, 255, 0]
 

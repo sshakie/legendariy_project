@@ -34,6 +34,9 @@ class Game:
         self.keyboard = []  # TODO Сделать клавиатуру
         self.logic = Logic(f'data/dictionary/words-length-{self.len_word}.txt')
 
+        # Звуки
+        self.sfx_select2 = pygame.mixer.Sound('data/sounds/select_2.wav')
+
         # Создание клавиатуры на экране
         for i, letter in enumerate('йцукенгшщзхъ'):
             x_0, y_0, l = 33, 645, 45
@@ -64,7 +67,8 @@ class Game:
 
     def selecting_button(self):  # Функция для выделения кнопки
         if self.active:
-            self.exit_button.selecting()
+            if self.exit_button.selecting():
+                self.sfx_select2.play()
 
     def check_clicked(self, event):  # Функция проверки нажатия на кнопку эмулированной клавиатуры
         for i in self.keyboard:
