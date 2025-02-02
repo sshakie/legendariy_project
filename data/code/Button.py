@@ -1,12 +1,9 @@
 import pygame
 
-def load_image(name, color_key=None):
+
+def load_image(name, color_key=None):  # Функция для загрузки текстур (из учебника)
     fullname = name
-    try:
-        image = pygame.image.load(fullname)
-    except pygame.error as message:
-        print('Cannot load image:', name)
-        raise SystemExit(message)
+    image = pygame.image.load(fullname)
 
     if color_key is not None:
         image = image.convert()
@@ -18,107 +15,85 @@ def load_image(name, color_key=None):
     return image
 
 
-class KeyboardButton(pygame.sprite.Sprite):
-    def __init__(self, x, y, width, height, color, text='', text_color=(0, 0, 0), font_size=30, border_radius=10):
-        super().__init__()
-        self.line_text = text
-        self.color = color
-        self.text_color = text_color
-        self.font_size = font_size
-        self.border_radius = border_radius
-
-        self.surf = pygame.Surface((width, height), pygame.SRCALPHA)
-        self.rect = self.surf.get_rect(topleft=(x, y))
-
-        pygame.draw.rect(self.surf, color, (0, 0, width, height), border_radius=self.border_radius)
-        self.font = pygame.font.Font(None, self.font_size)
-        text_color = self.text_color
-
-        if all(channel < 180 for channel in color):
-            text_color = (255, 255, 255)
-
-        self.text = self.font.render(self.line_text, True, text_color)
-        text_x = (width - self.text.get_width()) // 2
-        text_y = (height - self.text.get_height()) // 2
-        self.surf.blit(self.text, (text_x, text_y))
-
-    def check_cursor_position(self):
-        return self.rect.collidepoint(pygame.mouse.get_pos())
-
-    def is_clicked(self, event):
-        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-            return self.check_cursor_position()
-        return False
-
-    def get_rect_coord(self):
-        return self.surf, self.rect.topleft
-
-    def get_text(self):
-        return self.line_text
-
-
 class Button(pygame.sprite.Sprite):
-    def __init__(self, x, y, width, height, image_path, text, font_size, text_color=(0, 0, 0), crop: tuple[int, int, int, int]=None, selected_coords=(0, 0)):
+    def __init__(self, x, y, width, height, text, font_size, type=0, crop: tuple[int, int, int, int] = None,
+                 selected_crop=None):
         super().__init__()
-        self.line_text = text
-        self.text_color = text_color
-        self.font_size = font_size
-        self.selected_coords = selected_coords
         self.width = width
         self.height = height
+        self.text = text
+        self.text_font = 'data/myy.ttf'
+
+        self.type = type
+        self.image_path = "data/textures/button-ui.png"
+        # 1: играть, 2: ларек, 3: выход, 4: кнопка-в-ларьке, 5: мал-кнопка-в-ларьке, 6: назад (ларек), 7: выйти (игра)
+        # 8: заново (проигрыш), 9: выйти (проигрыш), 10: заново (выигрыш), 11: выйти (выигрыш)
+        self.im2tp = {0: [crop, selected_crop],
+                      1: [(0, 397, 404, 118), 405],
+                      2: [(0, 516, 403, 94), 404],
+                      3: [(0, 611, 403, 97), 404],
+                      4: [(0, 261, 134, 75), 135],
+                      5: [(174, 337, 86, 59), 261],
+                      6: [(0, 185, 509, 75), 510],
+                      7: [(1020, 185, 134, 39), 1155],
+                      8: [(0, 0, 309, 91), 310],
+                      9: [(0, 92, 309, 92), 9],
+                      10: [(620, 0, 309, 91), 930],
+                      11: [(620, 92, 309, 92), 931]}
+        if type != 0:
+            crop, selected_crop = self.im2tp[type]
 
         self.surf = pygame.Surface((width, height), pygame.SRCALPHA)
         self.rect = self.surf.get_rect(topleft=(x, y))
         pygame.draw.rect(self.surf, (255, 255, 255, 0), self.rect)
 
-        self.base_image = load_image(image_path).subsurface(crop)
+        # Текстуры для кнопки
+        self.base_image = load_image(self.image_path).subsurface(crop)
+        self.image = pygame.transform.scale(self.base_image, (width, height))
         self.selected_image = None
-        if crop:
-            self.image = self.base_image
-            if self.selected_coords != (0, 0):
-                self.selected_image = load_image(image_path).subsurface((self.selected_coords[0], self.selected_coords[1], crop[2], crop[3]))
-
-        # Масштабируем изображение до размеров кнопки
-        self.image = pygame.transform.scale(self.image, (width, height))
-        if self.selected_coords != (0, 0):
+        if selected_crop:  # Если у кнопки есть выделенная текстурка, то ставим его
+            self.selected_image = load_image(self.image_path).subsurface((selected_crop, crop[1], crop[2], crop[3]))
             self.selected_image = pygame.transform.scale(self.selected_image, (width, height))
 
-            # Настраиваем шрифт и текст
-        self.font = pygame.font.Font(None, font_size)
-        self.text = self.font.render(self.line_text, True, self.text_color)
-        self.text_x = width // 2 - self.text.get_width() // 2
-        self.text_y = (height // 2 - self.text.get_height() // 2) - 10
+        # Текст на кнопке
+        self.font = pygame.font.Font(self.text_font, font_size)
+        self.text_label = self.font.render(self.text, True, (0, 0, 0))
+        self.text_x = width // 2 - self.text_label.get_width() // 2
+        self.text_y = (height // 2 - self.text_label.get_height() // 2) - 10
 
-        # Рисуем изображение и текст на кнопке
+        # Рендер кнопки
         self.surf.blit(self.image, (0, 0))
-        self.surf.blit(self.text, (self.text_x, self.text_y))
+        self.surf.blit(self.text_label, (self.text_x, self.text_y))
 
-    def check_cursor_position(self):
+    def check_cursor_position(self):  # Функция для проверки местоположения курсора
         return self.rect.collidepoint(pygame.mouse.get_pos())
 
-    def is_clicked(self, event):
+    def is_clicked(self, event):  # Функция для проверки нажатия
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             return self.check_cursor_position()
         return False
 
-    def get_rect_coord(self):
+    def get_rect_coord(self):  # Фукнция для получения координат "хитбокса"
         return self.surf, self.rect.topleft
 
-    def get_text(self):
-        return self.line_text
+    def get_text(self):  # Функция для получения текста кнопки
+        return self.text
 
-    def selecting(self):
-        self.surf = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
-        if not (self.selected_image is None):
-            if self.check_cursor_position():
-                self.image = self.selected_image
-            else:
-                self.image = self.base_image
+    def selecting(self):  # Функция для замены на текстуру выделенной кнопки/вовращение на стандартную
+        if self.check_cursor_position():
+            self.image = self.selected_image
         else:
             self.image = self.base_image
-        # Рисуем изображение и текст на кнопке
-        self.surf.blit(self.image, (0, 0))
-        self.surf.blit(self.text, (self.text_x, self.text_y))
 
-    def set_image(self, image_path, crop):
-        self.base_image = pygame.transform.scale(load_image(image_path).subsurface(crop), (self.width, self.height))
+        # Рендер
+        self.surf.blit(self.image, (0, 0))
+        self.surf.blit(self.text_label, (self.text_x, self.text_y))
+
+    def set_image(self, crop: tuple[int, int, int, int] = None,
+                  selected_crop=None):  # Функция для постановки новых текстурок
+        self.base_image = load_image(self.image_path).subsurface(crop)
+        self.image = pygame.transform.scale(self.base_image, (self.width, self.height))
+        self.selected_image = None
+        if selected_crop:  # Если у кнопки есть выделенная текстурка, то ставим его
+            self.selected_image = load_image(self.image_path).subsurface((selected_crop, crop[1], crop[2], crop[3]))
+            self.selected_image = pygame.transform.scale(self.selected_image, (self.width, self.height))
