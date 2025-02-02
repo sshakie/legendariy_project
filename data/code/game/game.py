@@ -24,10 +24,9 @@ class Game:
         self.exit_button = Button(8, 6, 134, 39, 'выйти', 0, type=7)
 
         # Текст
-        self.text_font = None
-        self.font = pygame.font.Font(self.text_font, 30)
+        self.text_font = 'data/myy.ttf'
+        self.font = pygame.font.Font(self.text_font, 50)
         self.attempt_label = self.font.render(f'Попыток: {self.attempts}', True, (0, 0, 0))
-        self.font = pygame.font.Font(None, 50)
 
         # Настройка
         self.guessing = [{x: Cell(x, y, 5, 15, (50, 50, 50)) for x in range(self.len_word)} for y in

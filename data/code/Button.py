@@ -22,7 +22,7 @@ class Button(pygame.sprite.Sprite):
         self.width = width
         self.height = height
         self.text = text
-        self.text_font = None
+        self.text_font = 'data/myy.ttf'
 
         self.type = type
         self.image_path = "data/textures/button-ui.png"
@@ -85,10 +85,12 @@ class Button(pygame.sprite.Sprite):
         else:
             self.image = self.base_image
 
+        # Рендер
         self.surf.blit(self.image, (0, 0))
         self.surf.blit(self.text_label, (self.text_x, self.text_y))
 
-    def set_image(self, crop: tuple[int, int, int, int] = None, selected_crop=None):
+    def set_image(self, crop: tuple[int, int, int, int] = None,
+                  selected_crop=None):  # Функция для постановки новых текстурок
         self.base_image = load_image(self.image_path).subsurface(crop)
         self.image = pygame.transform.scale(self.base_image, (self.width, self.height))
         self.selected_image = None
