@@ -61,24 +61,24 @@ def main():
             elif shop_window.on_click(event):
                 butt_text = shop_window.on_click(event).get_text()
                 if butt_text == 'право на ошибку':
-                    if buy(15000000):
+                    if buy(10):
                         print(1)
                 elif butt_text == 'раскрыть букву':
-                    if buy(10000000):
+                    if buy(25):
                         print(2)
                 elif butt_text == 'игра-капча':
                     money += 15
                 elif butt_text == 'кнопки':
-                    if buy(20000000):
+                    if buy(30):
                         print(3)
                 elif butt_text == 'детали':
-                    if buy(17000000):
+                    if buy(45):
                         print(4)
                 elif butt_text == 'буквы':
-                    if buy(35000000):
+                    if buy(50):
                         print(5)
                 elif butt_text == 'фон':
-                    if buy(6000000):
+                    if buy(65):
                         print(6)
                 elif butt_text == 'назад':
                     old_scene = shop_window
