@@ -7,7 +7,7 @@ from data.code.game.logic import Logic
 
 
 class Game:
-    def __init__(self, screen, attempts=5, len_word=6, active=False):
+    def __init__(self, screen, attempts=5, len_word=5, active=False):
         self.screen = screen
         self.active = active
         self.clock = pygame.time.Clock()
@@ -45,28 +45,34 @@ class Game:
         height = 83 # Высота
         width_between_cell = 100 # Расстояние от левого края одного квадрата, до левого края другого
         height_between_cell = 98 # Расстояние от верхнего края одного квадрата, до верхнего края другого
+        self.red_rect = pygame.Rect(x_0, y_0, 509, height)
 
         if self.len_word == 6: # TODO Расставить правильно значения
-            x_0 = 75  # Начальная позиция по х
+            x_0 = 45  # Начальная позиция по х
             y_0 = 100  # Начальная позиция по у
-            width = 95  # Ширина
-            height = 63  # Высота
-            width_between_cell = 92  # Расстояние от левого края одного квадрата, до левого края другого
-            height_between_cell = 70  # Расстояние от верхнего края одного квадрата, до верхнего края другого
+            width = 96  # Ширина
+            height = 83  # Высота
+            width_between_cell = 86  # Расстояние от левого края одного квадрата, до левого края другого
+            height_between_cell = 98  # Расстояние от верхнего края одного квадрата, до верхнего края другого
+            self.red_rect = pygame.Rect(x_0, y_0, 526, height)
         elif self.len_word == 7: # TODO Расставить правильно значения
-            x_0 = 75  # Начальная позиция по х
+            x_0 = 41  # Начальная позиция по х
             y_0 = 100  # Начальная позиция по у
-            width = 95  # Ширина
-            height = 63  # Высота
-            width_between_cell = 92  # Расстояние от левого края одного квадрата, до левого края другого
-            height_between_cell = 70  # Расстояние от верхнего края одного квадрата, до верхнего края другого
+            width = 84  # Ширина
+            height = 83  # Высота
+            width_between_cell = 74  # Расстояние от левого края одного квадрата, до левого края другого
+            height_between_cell = 98  # Расстояние от верхнего края одного квадрата, до верхнего края другого
+            self.red_rect = pygame.Rect(x_0, y_0, 528, height)
+
         elif self.len_word == 8: # TODO Расставить правильно значения
-            x_0 = 75  # Начальная позиция по х
+            x_0 = 40  # Начальная позиция по х
             y_0 = 100  # Начальная позиция по у
-            width = 95  # Ширина
-            height = 63  # Высота
-            width_between_cell = 92  # Расстояние от левого края одного квадрата, до левого края другого
-            height_between_cell = 70  # Расстояние от верхнего края одного квадрата, до верхнего края другого
+            width = 76  # Ширина
+            height = 83  # Высота
+            width_between_cell = 66  # Расстояние от левого края одного квадрата, до левого края другого
+            height_between_cell = 98  # Расстояние от верхнего края одного квадрата, до верхнего края другого
+            self.red_rect = pygame.Rect(x_0, y_0, 538, height)
+
         self.guessing = [
             {x: Cell(x_0 + x * width_between_cell, y_0 + y * height_between_cell, width, height, self.text_font, 50, text_color=(0, 0, 0)) for x in range(self.len_word)}
             for y in range(self.attempts)]
@@ -75,9 +81,7 @@ class Game:
         self.transparency_red_rect = 0
 
         self.border_radius = 5
-        self.red_rect = pygame.Rect(self.guessing[0][0].x, self.guessing[0][0].y,
-                                    (self.guessing[0][0].width * self.len_word - 3 * (self.len_word - 1)),
-                                    self.guessing[0][0].height)
+
 
         self.keyboard = []
         self.logic = Logic(f'data/dictionary/words-length-{self.len_word}.txt')
@@ -97,6 +101,7 @@ class Game:
             self.keyboard.append(kb)
 
     def render(self):  # Функция для рендера интерфейса
+        self.attempt_label = self.font.render(f'Попыток: {self.attempts}', True, (0, 0, 0))
         self.all_sprites.draw(self.screen)
         self.all_sprites.update()
         self.screen.blit(self.attempt_label, (289, 52))
@@ -126,7 +131,7 @@ class Game:
             red_surface = pygame.Surface(self.screen.get_size(), pygame.SRCALPHA)
             red_surface.fill((0, 0, 0, 0))
             pygame.draw.rect(red_surface, (self.transparency_red_rect, 0, 0), self.red_rect,
-                             border_radius=self.border_radius, width=5)
+                             border_radius=self.border_radius, width=10)
             self.screen.blit(red_surface, (0, 0))
             self.transparency_red_rect -= 3
 
@@ -214,7 +219,8 @@ class Game:
             self.check_win()
 
             self.input_word = ''
-            self.red_rect.y += self.red_rect.height + 7 # TODO Исправить перенос рамки в соответствии с
+            self.red_rect.y += 98
+            self.attempts -= 1
 
     def check_win(self):  # TODO Придумать адекватное название метода
         if self.count_string < self.attempts:
