@@ -1,4 +1,5 @@
 import pygame
+
 from data.code.Button import Button, load_image
 from data.code.animating import AnimatedSprite
 from data.code.game.cell import Cell
@@ -38,11 +39,39 @@ class Game:
         self.attempt_label = self.font.render(f'Попыток: {self.attempts}', True, (0, 0, 0))
 
         # Настройка
+        #if self.len_word == 5:
+        x_0 = 75 # Начальная позиция по х
+        y_0 = 100 # Начальная позиция по у
+        width = 100 # Ширина
+        height = 63 # Высота
+        wight_between_cell = 92 # Расстояние от левого края одного квадрата, до левого края другого
+        height_between_cell = 70 # Расстояние от верхнего края одного квадрата, до верхнего края другого
+
+        if self.len_word == 6: # TODO Расставить правильно значения
+            x_0 = 75  # Начальная позиция по х
+            y_0 = 100  # Начальная позиция по у
+            width = 95  # Ширина
+            height = 63  # Высота
+            wight_between_cell = 92  # Расстояние от левого края одного квадрата, до левого края другого
+            height_between_cell = 70  # Расстояние от верхнего края одного квадрата, до верхнего края другого
+        elif self.len_word == 7: # TODO Расставить правильно значения
+            x_0 = 75  # Начальная позиция по х
+            y_0 = 100  # Начальная позиция по у
+            width = 95  # Ширина
+            height = 63  # Высота
+            wight_between_cell = 92  # Расстояние от левого края одного квадрата, до левого края другого
+            height_between_cell = 70  # Расстояние от верхнего края одного квадрата, до верхнего края другого
+        elif self.len_word == 8: # TODO Расставить правильно значения
+            x_0 = 75  # Начальная позиция по х
+            y_0 = 100  # Начальная позиция по у
+            width = 95  # Ширина
+            height = 63  # Высота
+            wight_between_cell = 92  # Расстояние от левого края одного квадрата, до левого края другого
+            height_between_cell = 70  # Расстояние от верхнего края одного квадрата, до верхнего края другого
         self.guessing = [
-            {x: Cell(75 + x * 92, 100 + y * 70, 95, 63, self.text_font, 50,
-                     text_color=(0, 0, 0)) for x in range(self.len_word)} for
-            y in range(self.attempts)]  # TODO Сделать динамически изменяемый размер шрифт и цвет
-        # TODO Сделать динамически изменяемый размер шрифт и цвет
+            {x: Cell(x_0 + x * wight_between_cell, y_0 + y * height_between_cell, width, height, self.text_font, 50, text_color=(0, 0, 0)) for x in range(self.len_word)}
+            for y in range(self.attempts)]
+
 
         self.transparency_red_rect = 0
 
@@ -186,7 +215,7 @@ class Game:
             self.check_win()
 
             self.input_word = ''
-            self.red_rect.y += self.red_rect.height + 7
+            self.red_rect.y += self.red_rect.height + 7 # TODO Исправить перенос рамки в соответствии с
 
     def check_win(self):  # TODO Придумать адекватное название метода
         if self.count_string < self.attempts:
