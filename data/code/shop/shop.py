@@ -4,7 +4,7 @@ from data.code.animating import AnimatedSprite
 
 
 class Shop:
-    def __init__(self, screen, money, active=False):
+    def __init__(self, screen, money, mistake, letter, active=False):
         self.screen = screen
         self.active = active
         self.money = money
@@ -12,6 +12,10 @@ class Shop:
         self.font = pygame.font.Font(self.text_font, 30)
         self.clock = pygame.time.Clock()
         self.fps = 60
+        self.captcha = {'в цепи': (0, 0, 148, 64), 'высшую': (149, 0, 252, 113), 'беккерелем': (402, 0, 235, 76),
+                        'возникновение': (638, 0, 207, 56), 'обусловливающая': (846, 0, 246, 60),
+                        'распада ядер': (1093, 0, 98, 56), 'система': (1192, 0, 148, 37), 'мерно': (1341, 0, 79, 48), 'номера': (1421, 0, 151, 58),
+                        'человеконенавистничество': (1573, 0, 245, 94), 'миролюбивый': (1396, 95, 199, 98), 'аэропорт': (1596, 95, 204, 99)}
 
         # Интерфейс
         self.all_sprites = pygame.sprite.Group()
@@ -24,15 +28,18 @@ class Shop:
         self.upgrade_text = pygame.image.load('data/textures/ui.png').subsurface((299, 0, 294, 57))
         self.customization_text = pygame.image.load('data/textures/ui.png').subsurface((299, 58, 335, 56))
         self.money_label = self.font.render(str(self.money), True, (100, 0, 0))
+        self.mistake_count = self.font.render(str(mistake), True, (100, 0, 0))
+        self.letter_count = self.font.render(str(letter), True, (100, 0, 0))
+        self.prices = pygame.image.load('data/textures/prices.png')
 
         # Кнопки
-        self.mistake_upgrade = Button(29, 197, 134, 75, 'право на ошибку', 15, type=4)
-        self.letter_upgrade = Button(189, 196, 134, 75, 'раскрыть букву', 15, type=4)
-        self.game_upgrade = Button(29, 277, 134, 75, 'игра-капча', 15, type=4)
+        self.mistake_upgrade = Button(29, 197, 134, 75, ['право на ', 'ошибку'], 22, type=4)
+        self.letter_upgrade = Button(189, 196, 134, 75, ['раскрыть ', 'букву'], 22, type=4)
+        self.game_upgrade = Button(29, 277, 134, 75, ['игра-', 'капча'], 26, type=4, offset=(-10, 0))
         self.button_custom = Button(111, 427, 134, 75, 'кнопки', 30, type=4)
-        self.detail_custom = Button(271, 427, 134, 75, 'детали', 30, type=4)
+        self.detail_custom = Button(271, 427, 134, 75, 'детали', 27, type=4)
         self.letter_custom = Button(431, 427, 134, 75, 'буквы', 30, type=4)
-        self.background_custom = Button(472, 512, 86, 59, 'фон', 30, type=5)
+        self.background_custom = Button(472, 512, 86, 59, 'фон', 30, type=5, offset=(0, -10))
         self.exit_button = Button(46, 657, 509, 75, 'назад', 0, type=6)
 
         # Звуки
@@ -57,6 +64,9 @@ class Shop:
         self.screen.blit(*self.letter_custom.get_rect_coord())
         self.screen.blit(*self.background_custom.get_rect_coord())
         self.screen.blit(*self.exit_button.get_rect_coord())
+        self.screen.blit(self.prices, (0, 0))
+        self.screen.blit(self.mistake_count, (44, 245))
+        self.screen.blit(self.letter_count, (204, 245))
         self.clock.tick(self.fps)
 
     def on_click(self, event):  # Функция нажатия кнопки

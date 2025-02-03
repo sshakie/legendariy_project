@@ -51,15 +51,16 @@ def main():
     global menu_window, shop_window, game_window
     pygame.display.set_caption('Wordy')
     size = width, height = 600, 800
-    screen = pygame.display.set_mode(size, pygame.NOFRAME, pygame.SRCALPHA)
+    screen = pygame.display.set_mode(size, pygame.SRCALPHA)
     menu_window = Menu(screen, money, active=True)
-    shop_window = Shop(screen, money)
+    shop_window = Shop(screen, money, mistake_thing, letter_thing)
     game_window = Game(screen)
 
     # Звуки
     sfx_start = pygame.mixer.Sound('data/sounds/menu/start.wav')
     sfx_start.play()
     sfx_click = pygame.mixer.Sound('data/sounds/click.wav')
+    sfx_click_keyboard = pygame.mixer.Sound('data/sounds/game/press.wav')
 
     clock = pygame.time.Clock()
     update_shop_buttons()
@@ -71,6 +72,7 @@ def main():
             if menu_window.on_click(event):
                 butt_text = menu_window.on_click(event).get_text()
                 if butt_text == 'играть':
+                    game_window = Game(screen)
                     game_starting = True
                     game_window.active = True
                     menu_window.active = False
@@ -87,9 +89,11 @@ def main():
                 if butt_text == 'право на ошибку':
                     if buy(10):
                         mistake_thing += 1
+                        shop_window.mistake_count = shop_window.font.render(str(mistake_thing), True, (100, 0, 0))
                 elif butt_text == 'раскрыть букву':
                     if buy(25):
                         letter_thing += 1
+                        shop_window.letter_count = shop_window.font.render(str(letter_thing), True, (100, 0, 0))
                 elif butt_text == 'игра-капча':
                     money += 15
                 elif butt_text == 'кнопки':
@@ -126,6 +130,9 @@ def main():
                     game_window.active = False
                     timer, transition_alpha, k = 60, 255, 4
                     game_starting = True
+                    sfx_click.play()
+                elif butt_text == 'заново':
+                    game_window = Game(screen)
                 sfx_click.play()
 
         # Логика переключения окон
@@ -140,7 +147,7 @@ def main():
             game_window.render()
 
         transition()
-        glow_alpha = max(0, glow_alpha - 1)
+        glow_alpha = max(0, glow_alpha - 2)
 
         pygame.draw.rect(screen, (255, 255, 255), (0, 0, 600, 800), ws_width)
         black_screen.fill((0, 0, 0))
