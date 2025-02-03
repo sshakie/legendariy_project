@@ -27,9 +27,12 @@ class Game:
         self.win_display = load_image('data/textures/wallpapers/win-screen.png')
         self.lose_display = load_image('data/textures/wallpapers/gameover-screen.png')
 
-        self.exit_button_2 = Button(8, 6, 134, 39, 'выйти', 0, type=7)
+        self.reset_button = None
+        self.exit_button_2 = None
 
         self.win_lose_flg = None
+
+
 
         # Текст
         self.text_font = 'data/myy.ttf'
@@ -43,9 +46,6 @@ class Game:
         # TODO Сделать динамически изменяемый размер шрифт и цвет
         self.keyboard = []  # TODO Сделать клавиатуру
         self.logic = Logic(f'data/dictionary/words-length-{self.len_word}.txt')
-
-        # Звуки
-        self.sfx_select2 = pygame.mixer.Sound('data/sounds/select_2.wav')
 
         # Создание клавиатуры на экране
         for i, letter in enumerate('йцукенгшщзхъ'):
@@ -75,17 +75,20 @@ class Game:
         for i in self.keyboard:
             self.screen.blit(*i.get_rect_coord())
 
-        if self.win_lose_flg is None:
-            return
-        elif self.win_lose_flg is True: # Выигрыш
-            self.screen.blit(self.win_display, (0, 0))
-        elif self.win_lose_flg is False:
-            self.screen.blit(self.lose_display, (0, 0))
+        if self.win_lose_flg is not None:
+            if self.win_lose_flg: # Выигрыш
+                self.screen.blit(self.win_display, (0, 0))
+            elif self.win_lose_flg is False:
+                self.screen.blit(self.lose_display, (0, 0))
+            self.screen.blit(*self.reset_button.get_rect_coord())
+            self.screen.blit(*self.exit_button_2.get_rect_coord())
 
     def selecting_button(self):  # Функция для выделения кнопки
         if self.active:
-            if self.exit_button.selecting():
-                self.sfx_select2.play()
+            self.exit_button.selecting()
+            if self.win_lose_flg is not None:
+                self.reset_button.selecting()
+                self.exit_button_2.selecting()
 
     def check_clicked(self, event):  # Функция проверки нажатия на кнопку эмулированной клавиатуры
         for i in self.keyboard:
@@ -94,8 +97,14 @@ class Game:
         return False
 
     def on_click(self, event):  # Функция нажатия кнопки
-        if self.active and self.exit_button.is_clicked(event):
-            return self.exit_button
+        if self.active:
+            if self.exit_button.is_clicked(event):
+                return self.exit_button
+            if self.win_lose_flg is not None:
+                if self.reset_button.is_clicked(event):
+                    return self.reset_button
+                if self.exit_button_2.is_clicked(event):
+                    return self.exit_button_2
 
         button = self.check_clicked(event)
         if button:
@@ -111,46 +120,48 @@ class Game:
 
 
         # Обработка нажатий с клавиатуры
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_BACKSPACE:
-                self.input_word = self.input_word[:-1]
-                self.guessing[self.count_string][len(self.input_word)].set_letter('', -1)
-                print(self.input_word)
-            elif event.key == pygame.K_RETURN:
-                self.return_press()
-            elif event.unicode in 'абвгдежзийклмнопрстуфхцчшщъыьэюя':
-                self.input_word += event.unicode
+        if self.count_string < self.attempts:
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_BACKSPACE:
+                    self.input_word = self.input_word[:-1]
+                    self.guessing[self.count_string][len(self.input_word)].set_letter('', -1)
+                    print(self.input_word)
+                elif event.key == pygame.K_RETURN:
+                    self.return_press()
+                elif event.unicode in 'абвгдежзийклмнопрстуфхцчшщъыьэюя':
+                    self.input_word += event.unicode
 
-        if len(self.input_word) > self.len_word:
-            self.input_word = self.input_word[0:self.len_word]
+            if len(self.input_word) > self.len_word:
+                self.input_word = self.input_word[0:self.len_word]
 
-        self.input_word = self.input_word.lower()
-        for i, letter in enumerate(self.input_word):
-            self.guessing[self.count_string][i].set_letter(letter, -1)
+            self.input_word = self.input_word.lower()
+            for i, letter in enumerate(self.input_word):
+                self.guessing[self.count_string][i].set_letter(letter, -1)
 
     def return_press(self):
-        data = self.logic.check_input_word(self.input_word)
-        if not data or len(self.input_word) < int(self.len_word):  # Слова нет в словаре
-            return  # TODO хз че делать
-        else:
-            for i, v in sorted(data.items(), key=lambda m: m[0]):
-                if v is None:
-                    self.guessing[self.count_string][self.input_word.index(i)].set_letter(i, 0)
-                elif v == 'неверное положение':
-                    self.guessing[self.count_string][self.input_word.index(i)].set_letter(i, 2)
-                elif isinstance(v, list):
-                    for q in v:
-                        self.guessing[self.count_string][q].set_letter(i, 1)
-        self.count_string += 1
-        self.attempts -= 1
-        self.attempt_label = self.font.render(f'Попыток: {self.attempts}', True, (0, 0, 0))
-        self.check_win()
-        self.input_word = ''
+        if len(self.input_word) == self.len_word:
+            data = self.logic.check_input_word(self.input_word)
+            if not data:  # Слова нет в словаре
+                return  # TODO хз че делать
+            else:
+                for i, v in enumerate(data):
+                    if v is False:
+                        self.guessing[self.count_string][i].set_letter(self.input_word[i], 0)
+                    elif v == 'неверное положение':
+                        self.guessing[self.count_string][i].set_letter(self.input_word[i], 2)
+                    elif v is True:
+                        self.guessing[self.count_string][i].set_letter(self.input_word[i], 1)
+            self.count_string += 1
+            self.check_win()
+            self.input_word = ''
 
     def check_win(self): # TODO Придумать адекватное название метода
         if self.count_string < self.attempts:
             if self.input_word == self.logic.get_right_word().lower():
                 self.win_lose_flg = True
+                self.reset_button = Button(154, 354, 309, 91, 'заново', 0, type=10)
+                self.exit_button_2 = Button(154, 466, 308, 91, 'выйти', 0, type=11)
         else:
             self.win_lose_flg = False
-            # Проигрыш
+            self.reset_button = Button(154, 354, 309, 91, 'заново', 0, type=8)
+            self.exit_button_2 = Button(154, 466, 308, 91, 'выйти', 0, type=9)

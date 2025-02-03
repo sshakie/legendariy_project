@@ -51,7 +51,7 @@ def main():
     global menu_window, shop_window, game_window
     pygame.display.set_caption('Wordy')
     size = width, height = 600, 800
-    screen = pygame.display.set_mode(size, pygame.NOFRAME, pygame.SRCALPHA)
+    screen = pygame.display.set_mode(size, pygame.SRCALPHA)
     menu_window = Menu(screen, money, active=True)
     shop_window = Shop(screen, money)
     game_window = Game(screen)
@@ -71,6 +71,7 @@ def main():
             if menu_window.on_click(event):
                 butt_text = menu_window.on_click(event).get_text()
                 if butt_text == 'играть':
+                    game_window = Game(screen)
                     game_starting = True
                     game_window.active = True
                     menu_window.active = False
@@ -126,6 +127,8 @@ def main():
                     game_window.active = False
                     timer, transition_alpha, k = 60, 255, 4
                     game_starting = True
+                elif butt_text == 'заново':
+                    game_window = Game(screen)
                 sfx_click.play()
 
         # Логика переключения окон
