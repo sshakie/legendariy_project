@@ -16,7 +16,7 @@ class Logic:
 
     def check_input_word(self, input_word: str) -> list | bool:
         """:return False если слова нет в словаре.
-           :return list[bool | str] False Если буквы нет в слове, True если есть. 'неверное положение' если не верное попложение"""
+           :return list[bool | str] False Если буквы нет в слове, True если есть. 'Неверное положение' если не верное положение"""
 
         input_word = input_word.lower()
         if input_word not in self.dictionary:  # Если слова нет в словаре.

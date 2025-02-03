@@ -97,3 +97,5 @@ class Button(pygame.sprite.Sprite):
         if selected_crop:  # Если у кнопки есть выделенная текстурка, то ставим его
             self.selected_image = load_image(self.image_path).subsurface((selected_crop, crop[1], crop[2], crop[3]))
             self.selected_image = pygame.transform.scale(self.selected_image, (self.width, self.height))
+        self.surf.blit(self.image, (0, 0))
+        self.surf.blit(self.text_label, (self.text_x, self.text_y))

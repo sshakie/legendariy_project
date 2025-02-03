@@ -32,6 +32,28 @@ class Cell(pygame.sprite.Sprite):
 
         self.surf.blit(self.image, (5, 5))
 
+    def round_corners(self, radius, *corners):
+        rounded_surface = pygame.Surface(self.surf.get_size(), pygame.SRCALPHA)
+
+        width, height = self.surf.get_size()
+
+        # Определяем радиусы для каждого угла
+        border_top_left = radius if "topleft" in corners else 0
+        border_top_right = radius if "topright" in corners else 0
+        border_bottom_left = radius if "bottomleft" in corners else 0
+        border_bottom_right = radius if "bottomright" in corners else 0
+
+        pygame.draw.rect(
+            rounded_surface,
+            (255, 255, 255, 255),
+            (0, 0, width, height),
+            border_top_left_radius=border_top_left,
+            border_top_right_radius=border_top_right,
+            border_bottom_left_radius=border_bottom_left,
+            border_bottom_right_radius=border_bottom_right
+        )
+        self.surf.blit(rounded_surface, (0, 0), special_flags=pygame.BLEND_RGBA_MIN)
+
     def set_letter(self, letter, type, text_offset=(0, 0)):
         self.letter = letter
         self.type = type
