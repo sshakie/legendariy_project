@@ -53,7 +53,7 @@ def main():
     size = width, height = 600, 800
     screen = pygame.display.set_mode(size, pygame.SRCALPHA)
     menu_window = Menu(screen, money, active=True)
-    shop_window = Shop(screen, money)
+    shop_window = Shop(screen, money, mistake_thing, letter_thing)
     game_window = Game(screen)
 
     # Звуки
@@ -88,9 +88,11 @@ def main():
                 if butt_text == 'право на ошибку':
                     if buy(10):
                         mistake_thing += 1
+                        shop_window.mistake_count = shop_window.font.render(str(mistake_thing), True, (100, 0, 0))
                 elif butt_text == 'раскрыть букву':
                     if buy(25):
                         letter_thing += 1
+                        shop_window.letter_count = shop_window.font.render(str(letter_thing), True, (100, 0, 0))
                 elif butt_text == 'игра-капча':
                     money += 15
                 elif butt_text == 'кнопки':

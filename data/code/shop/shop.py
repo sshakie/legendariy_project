@@ -4,7 +4,7 @@ from data.code.animating import AnimatedSprite
 
 
 class Shop:
-    def __init__(self, screen, money, active=False):
+    def __init__(self, screen, money, mistake, letter, active=False):
         self.screen = screen
         self.active = active
         self.money = money
@@ -24,6 +24,8 @@ class Shop:
         self.upgrade_text = pygame.image.load('data/textures/ui.png').subsurface((299, 0, 294, 57))
         self.customization_text = pygame.image.load('data/textures/ui.png').subsurface((299, 58, 335, 56))
         self.money_label = self.font.render(str(self.money), True, (100, 0, 0))
+        self.mistake_count = self.font.render(str(mistake), True, (100, 0, 0))
+        self.letter_count = self.font.render(str(letter), True, (100, 0, 0))
         self.prices = pygame.image.load('data/textures/prices.png')
 
         # Кнопки
@@ -59,6 +61,8 @@ class Shop:
         self.screen.blit(*self.background_custom.get_rect_coord())
         self.screen.blit(*self.exit_button.get_rect_coord())
         self.screen.blit(self.prices, (0, 0))
+        self.screen.blit(self.mistake_count, (44, 245))
+        self.screen.blit(self.letter_count, (204, 245))
         self.clock.tick(self.fps)
 
     def on_click(self, event):  # Функция нажатия кнопки
