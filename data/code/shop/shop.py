@@ -35,7 +35,7 @@ class Shop:
         self.button_custom = Button(111, 427, 134, 75, 'кнопки', 30, type=4)
         self.detail_custom = Button(271, 427, 134, 75, 'детали', 27, type=4)
         self.letter_custom = Button(431, 427, 134, 75, 'буквы', 30, type=4)
-        self.background_custom = Button(472, 512, 86, 59, 'фон', 30, type=5)
+        self.background_custom = Button(472, 512, 86, 59, 'фон', 30, type=5, offset=(0, -10))
         self.exit_button = Button(46, 657, 509, 75, 'назад', 0, type=6)
 
         # Звуки

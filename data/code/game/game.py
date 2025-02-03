@@ -24,7 +24,6 @@ class Game:
         self.exit_button = Button(8, 6, 134, 39, 'выйти', 0, type=7)
 
         # Интерфейс выигрыша
-
         self.win_display = load_image('data/textures/wallpapers/win-screen.png')
         self.lose_display = load_image('data/textures/wallpapers/gameover-screen.png')
 

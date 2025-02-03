@@ -66,7 +66,7 @@ class Button(pygame.sprite.Sprite):
         if isinstance(self.text, list):
             self.text_label = [self.font.render(i, True, (0, 0, 0)) for i in self.text]
             self.text_x = (width // 2 - self.text_label[0].get_width() // 2) + self.offset[0]
-            self.text_y = [((height // 2 - i.get_height() // 2) - 10 + 10 * n + self.offset[1]) for n, i in enumerate(self.text_label)]
+            self.text_y = [((height // 2 - i.get_height() // 2) - 10 + i.get_height() * n + self.offset[1]) for n, i in enumerate(self.text_label)]
             for i in range(len(self.text_label)):
                 self.surf.blit(self.text_label[i], (self.text_x, self.text_y[i]))
         else:
