@@ -17,8 +17,8 @@ class Cell(pygame.sprite.Sprite):
         self.width = width
         self.height = height
 
-        self.corrected_width = width - 10
-        self.corrected_height = height - 10
+        self.corrected_width = width - 20
+        self.corrected_height = height - 20
 
         self.font = pygame.font.Font(font, self.font_size)
         self.surf = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
@@ -30,7 +30,7 @@ class Cell(pygame.sprite.Sprite):
 
         self.image = pygame.transform.scale(self.image, (self.corrected_width, self.corrected_height))
 
-        self.surf.blit(self.image, (5, 5))
+        self.surf.blit(self.image, (10, 10))
 
     def round_corners(self, radius, *corners):
         rounded_surface = pygame.Surface(self.surf.get_size(), pygame.SRCALPHA)
@@ -74,7 +74,7 @@ class Cell(pygame.sprite.Sprite):
 
         # Масштабируем изображение и накладываем на поверхность
         self.image = pygame.transform.scale(self.image, (self.corrected_width, self.corrected_height))
-        self.surf.blit(self.image, (5, 5))
+        self.surf.blit(self.image, (10, 10))
 
         # Отрисовка текста
         if self.letter:

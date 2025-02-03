@@ -7,7 +7,7 @@ from data.code.game.logic import Logic
 
 
 class Game:
-    def __init__(self, screen, attempts=5, len_word=5, active=False):
+    def __init__(self, screen, attempts=5, len_word=6, active=False):
         self.screen = screen
         self.active = active
         self.clock = pygame.time.Clock()
@@ -39,37 +39,36 @@ class Game:
         self.attempt_label = self.font.render(f'Попыток: {self.attempts}', True, (0, 0, 0))
 
         # Настройка
-        #if self.len_word == 5:
-        x_0 = 75 # Начальная позиция по х
+        x_0 = 50 # Начальная позиция по х
         y_0 = 100 # Начальная позиция по у
-        width = 100 # Ширина
-        height = 63 # Высота
-        wight_between_cell = 92 # Расстояние от левого края одного квадрата, до левого края другого
-        height_between_cell = 70 # Расстояние от верхнего края одного квадрата, до верхнего края другого
+        width = 110 # Ширина
+        height = 83 # Высота
+        width_between_cell = 100 # Расстояние от левого края одного квадрата, до левого края другого
+        height_between_cell = 98 # Расстояние от верхнего края одного квадрата, до верхнего края другого
 
         if self.len_word == 6: # TODO Расставить правильно значения
             x_0 = 75  # Начальная позиция по х
             y_0 = 100  # Начальная позиция по у
             width = 95  # Ширина
             height = 63  # Высота
-            wight_between_cell = 92  # Расстояние от левого края одного квадрата, до левого края другого
+            width_between_cell = 92  # Расстояние от левого края одного квадрата, до левого края другого
             height_between_cell = 70  # Расстояние от верхнего края одного квадрата, до верхнего края другого
         elif self.len_word == 7: # TODO Расставить правильно значения
             x_0 = 75  # Начальная позиция по х
             y_0 = 100  # Начальная позиция по у
             width = 95  # Ширина
             height = 63  # Высота
-            wight_between_cell = 92  # Расстояние от левого края одного квадрата, до левого края другого
+            width_between_cell = 92  # Расстояние от левого края одного квадрата, до левого края другого
             height_between_cell = 70  # Расстояние от верхнего края одного квадрата, до верхнего края другого
         elif self.len_word == 8: # TODO Расставить правильно значения
             x_0 = 75  # Начальная позиция по х
             y_0 = 100  # Начальная позиция по у
             width = 95  # Ширина
             height = 63  # Высота
-            wight_between_cell = 92  # Расстояние от левого края одного квадрата, до левого края другого
+            width_between_cell = 92  # Расстояние от левого края одного квадрата, до левого края другого
             height_between_cell = 70  # Расстояние от верхнего края одного квадрата, до верхнего края другого
         self.guessing = [
-            {x: Cell(x_0 + x * wight_between_cell, y_0 + y * height_between_cell, width, height, self.text_font, 50, text_color=(0, 0, 0)) for x in range(self.len_word)}
+            {x: Cell(x_0 + x * width_between_cell, y_0 + y * height_between_cell, width, height, self.text_font, 50, text_color=(0, 0, 0)) for x in range(self.len_word)}
             for y in range(self.attempts)]
 
 
@@ -107,8 +106,8 @@ class Game:
         self.clock.tick(self.fps)
 
         for y in range(self.attempts):
-            self.guessing[y][0].round_corners(5, 'topleft', 'bottomleft')
-            self.guessing[y][self.len_word - 1].round_corners(5, 'topright', 'bottomright')
+            self.guessing[y][0].round_corners(8, 'topleft', 'bottomleft')
+            self.guessing[y][self.len_word - 1].round_corners(8, 'topright', 'bottomright')
 
         for i in range(len(self.guessing)):
             for q in self.guessing[i].keys():
@@ -156,9 +155,9 @@ class Game:
                     return self.reset_button
                 if self.exit_button_2.is_clicked(event):
                     return self.exit_button_2
-
         button = self.check_clicked(event)
         if button:
+
             if isinstance(button, Button):
                 btn_text = button.get_text()
                 if btn_text == 'backspace':

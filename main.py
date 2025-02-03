@@ -60,6 +60,7 @@ def main():
     sfx_start = pygame.mixer.Sound('data/sounds/menu/start.wav')
     sfx_start.play()
     sfx_click = pygame.mixer.Sound('data/sounds/click.wav')
+    sfx_click_keyboard = pygame.mixer.Sound('data/sounds/game/press.wav')
 
     clock = pygame.time.Clock()
     update_shop_buttons()
@@ -129,6 +130,7 @@ def main():
                     game_window.active = False
                     timer, transition_alpha, k = 60, 255, 4
                     game_starting = True
+                    sfx_click.play()
                 elif butt_text == 'заново':
                     game_window = Game(screen)
                 sfx_click.play()
