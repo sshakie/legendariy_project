@@ -4,7 +4,7 @@ from data.code.animating import AnimatedSprite
 
 
 class Shop:
-    def __init__(self, screen, money, active=False):
+    def __init__(self, screen, money, mistake, letter, active=False):
         self.screen = screen
         self.active = active
         self.money = money
@@ -24,16 +24,23 @@ class Shop:
         self.upgrade_text = pygame.image.load('data/textures/ui.png').subsurface((299, 0, 294, 57))
         self.customization_text = pygame.image.load('data/textures/ui.png').subsurface((299, 58, 335, 56))
         self.money_label = self.font.render(str(self.money), True, (100, 0, 0))
+        self.mistake_count = self.font.render(str(mistake), True, (100, 0, 0))
+        self.letter_count = self.font.render(str(letter), True, (100, 0, 0))
+        self.prices = pygame.image.load('data/textures/prices.png')
 
         # Кнопки
-        self.mistake_upgrade = Button(29, 197, 134, 75, 'право на ошибку', 15, type=4)
-        self.letter_upgrade = Button(189, 196, 134, 75, 'раскрыть букву', 15, type=4)
-        self.game_upgrade = Button(29, 277, 134, 75, 'игра-капча', 15, type=4)
+        self.mistake_upgrade = Button(29, 197, 134, 75, ['право на ', 'ошибку'], 22, type=4)
+        self.letter_upgrade = Button(189, 196, 134, 75, ['раскрыть ', 'букву'], 22, type=4)
+        self.game_upgrade = Button(29, 277, 134, 75, ['игра-', 'капча'], 26, type=4, offset=(-10, 0))
         self.button_custom = Button(111, 427, 134, 75, 'кнопки', 30, type=4)
-        self.detail_custom = Button(271, 427, 134, 75, 'детали', 30, type=4)
+        self.detail_custom = Button(271, 427, 134, 75, 'детали', 27, type=4)
         self.letter_custom = Button(431, 427, 134, 75, 'буквы', 30, type=4)
         self.background_custom = Button(472, 512, 86, 59, 'фон', 30, type=5)
         self.exit_button = Button(46, 657, 509, 75, 'назад', 0, type=6)
+
+        # Звуки
+        self.sfx_select = pygame.mixer.Sound('data/sounds/select.wav')
+        self.sfx_select2 = pygame.mixer.Sound('data/sounds/select_2.wav')
 
     def render(self):  # Функция для рендера интерфейса
         self.all_sprites.draw(self.screen)
@@ -53,12 +60,15 @@ class Shop:
         self.screen.blit(*self.letter_custom.get_rect_coord())
         self.screen.blit(*self.background_custom.get_rect_coord())
         self.screen.blit(*self.exit_button.get_rect_coord())
+        self.screen.blit(self.prices, (0, 0))
+        self.screen.blit(self.mistake_count, (44, 245))
+        self.screen.blit(self.letter_count, (204, 245))
         self.clock.tick(self.fps)
 
     def on_click(self, event):  # Функция нажатия кнопки
         if self.active:
             for button in [self.mistake_upgrade, self.letter_upgrade, self.game_upgrade, self.button_custom,
-                           self.detail_custom, self.letter_custom, self.exit_button]:
+                           self.detail_custom, self.letter_custom, self.background_custom, self.exit_button]:
                 if button.is_clicked(event):
                     return button
         return False
@@ -68,7 +78,11 @@ class Shop:
             for button in [self.mistake_upgrade, self.letter_upgrade, self.game_upgrade,
                            self.button_custom, self.detail_custom, self.letter_custom,
                            self.background_custom, self.exit_button]:
-                button.selecting()
+                if button.selecting():
+                    if button == self.exit_button:
+                        self.sfx_select2.play()
+                    else:
+                        self.sfx_select.play()
 
     def update(self, money):  # Подгрузка данных из main для обновления
         self.money = money
