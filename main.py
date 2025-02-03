@@ -143,7 +143,7 @@ def main():
             game_window.render()
 
         transition()
-        glow_alpha = max(0, glow_alpha - 1)
+        glow_alpha = max(0, glow_alpha - 2)
 
         pygame.draw.rect(screen, (255, 255, 255), (0, 0, 600, 800), ws_width)
         black_screen.fill((0, 0, 0))

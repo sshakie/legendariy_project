@@ -24,13 +24,14 @@ class Shop:
         self.upgrade_text = pygame.image.load('data/textures/ui.png').subsurface((299, 0, 294, 57))
         self.customization_text = pygame.image.load('data/textures/ui.png').subsurface((299, 58, 335, 56))
         self.money_label = self.font.render(str(self.money), True, (100, 0, 0))
+        self.prices = pygame.image.load('data/textures/prices.png')
 
         # Кнопки
-        self.mistake_upgrade = Button(29, 197, 134, 75, 'право на ошибку', 15, type=4)
-        self.letter_upgrade = Button(189, 196, 134, 75, 'раскрыть букву', 15, type=4)
-        self.game_upgrade = Button(29, 277, 134, 75, 'игра-капча', 15, type=4)
+        self.mistake_upgrade = Button(29, 197, 134, 75, ['право на ', 'ошибку'], 22, type=4)
+        self.letter_upgrade = Button(189, 196, 134, 75, ['раскрыть ', 'букву'], 22, type=4)
+        self.game_upgrade = Button(29, 277, 134, 75, ['игра-', 'капча'], 26, type=4, offset=(-10, 0))
         self.button_custom = Button(111, 427, 134, 75, 'кнопки', 30, type=4)
-        self.detail_custom = Button(271, 427, 134, 75, 'детали', 30, type=4)
+        self.detail_custom = Button(271, 427, 134, 75, 'детали', 27, type=4)
         self.letter_custom = Button(431, 427, 134, 75, 'буквы', 30, type=4)
         self.background_custom = Button(472, 512, 86, 59, 'фон', 30, type=5)
         self.exit_button = Button(46, 657, 509, 75, 'назад', 0, type=6)
@@ -57,6 +58,7 @@ class Shop:
         self.screen.blit(*self.letter_custom.get_rect_coord())
         self.screen.blit(*self.background_custom.get_rect_coord())
         self.screen.blit(*self.exit_button.get_rect_coord())
+        self.screen.blit(self.prices, (0, 0))
         self.clock.tick(self.fps)
 
     def on_click(self, event):  # Функция нажатия кнопки
