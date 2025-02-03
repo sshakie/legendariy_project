@@ -18,7 +18,7 @@ def load_image(name, color_key=None):  # Функция для загрузки 
 
 class Button(pygame.sprite.Sprite):
     def __init__(self, x, y, width, height, text, font_size, type=0, crop: tuple[int, int, int, int] = None,
-                 selected_crop=None, offset=[0, 0]):
+                 selected_crop=None, offset=(0, 0)):
         super().__init__()
         self.width = width
         self.height = height
@@ -58,6 +58,9 @@ class Button(pygame.sprite.Sprite):
             self.selected_image = load_image(self.image_path).subsurface((selected_crop, crop[1], crop[2], crop[3]))
             self.selected_image = pygame.transform.scale(self.selected_image, (width, height))
 
+        # Рендер кнопки
+        self.surf.blit(self.image, (0, 0))
+
         # Текст на кнопке
         self.font = pygame.font.Font(self.text_font, font_size)
         if isinstance(self.text, list):
@@ -68,12 +71,11 @@ class Button(pygame.sprite.Sprite):
                 self.surf.blit(self.text_label[i], (self.text_x, self.text_y[i]))
         else:
             self.text_label = self.font.render(self.text, True, (0, 0, 0))
-            self.text_x = width // 2 - self.text_label.get_width() // 2
-            self.text_y = (height // 2 - self.text_label.get_height() // 2) - 10
+            self.text_x = width // 2 - self.text_label.get_width() // 2 + self.offset[0]
+            self.text_y = (height // 2 - self.text_label.get_height() // 2) + self.offset[1]
             self.surf.blit(self.text_label, (self.text_x, self.text_y))
 
-        # Рендер кнопки
-        self.surf.blit(self.image, (0, 0))
+
 
     def check_cursor_position(self):  # Функция для проверки местоположения курсора
         return self.rect.collidepoint(pygame.mouse.get_pos())
@@ -91,7 +93,7 @@ class Button(pygame.sprite.Sprite):
             return ''.join(self.text)
         return self.text
 
-    def selecting(self):  # Функция для замены на текстуру выделенной кнопки/вовращение на стандартную
+    def selecting(self):  # Функция для замены на текстуру выделенной кнопки/возращение на стандартную
         changed = self.selected
         if self.check_cursor_position():
             self.image = self.selected_image
