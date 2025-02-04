@@ -1,4 +1,4 @@
-import pygame
+import pygame, random
 from data.code.Button import load_image
 
 
@@ -26,7 +26,7 @@ class Cell(pygame.sprite.Sprite):
         self.surf.fill((0, 0, 0))
         pygame.draw.rect(self.surf, (255, 255, 255, 0), self.rect)
 
-        self.image = load_image('data/textures/ui.png').subsurface((9, 321, 12, 12))
+        self.image = load_image('data/textures/ui.png').subsurface((3, 254, 8, 8))
 
         self.image = pygame.transform.scale(self.image, (self.corrected_width, self.corrected_height))
 
@@ -58,6 +58,10 @@ class Cell(pygame.sprite.Sprite):
         self.letter = letter
         self.type = type
 
+        right = [(469, 250, 75, 63), (545, 250, 75, 63), (621, 250, 75, 63)]
+        wrong_position = [(0, 250, 90, 63), (91, 250, 91, 63), (183, 250, 89, 63)]
+        wrong = [(273, 250, 64, 63), (338, 250, 65, 63), (404, 250, 64, 63)]
+
         # Очистка поверхности
         self.surf.fill((0, 0, 0))
         self.rect = self.surf.get_rect(topleft=(self.x, self.y))
@@ -66,11 +70,11 @@ class Cell(pygame.sprite.Sprite):
         if self.type == -1:
             pass
         elif self.type == 1:
-            self.image = load_image('data/textures/ui.png').subsurface((469, 250, 75, 63))  # Правильная буква
+            self.image = load_image('data/textures/ui.png').subsurface(random.choice(right))  # Правильная буква
         elif self.type == 2:
-            self.image = load_image('data/textures/ui.png').subsurface((0, 250, 90, 63))  # Неправильная позиция
+            self.image = load_image('data/textures/ui.png').subsurface(random.choice(wrong_position))  # Неправильная позиция
         else:
-            self.image = load_image('data/textures/ui.png').subsurface((273, 250, 64, 63))  # Неправильная буква
+            self.image = load_image('data/textures/ui.png').subsurface(random.choice(wrong))  # Неправильная буква
 
         # Масштабируем изображение и накладываем на поверхность
         self.image = pygame.transform.scale(self.image, (self.corrected_width, self.corrected_height))

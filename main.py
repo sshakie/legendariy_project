@@ -1,4 +1,6 @@
 import pygame
+from pygame import MOUSEBUTTONDOWN
+
 from data.code.Button import *
 from data.code.game.game import Game
 from data.code.menu.menu import Menu
@@ -15,7 +17,8 @@ with open('data/config') as config:
     wallpaper_can_buy = bool(int(config.split('\n')[4].split()[-1]))
     wallpaper_custom = bool(int(config.split('\n')[5].split()[-1]))
     mistake_thing = int(config.split('\n')[6].split()[-1])
-    letter_thing = int(config.split('\n')[6].split()[-1])
+    letter_thing = int(config.split('\n')[7].split()[-1])
+    wins = int(config.split('\n')[8].split()[-1])
 
 # Для перехода между сценами
 old_scene = None
@@ -32,6 +35,8 @@ glow_color = [0, 255, 0]
 ws_width = 1
 timer = 0
 k = 4
+time_for_game = 180
+attempts_for_game = 5
 
 pygame.init()
 sfx_exit = pygame.mixer.Sound('data/sounds/menu/end.wav')
@@ -48,13 +53,12 @@ def main():
     global ws_width, old_scene, new_scene, start_transition, stop_transition, black_screen, glow_color
     global game_starting, timer, transition_alpha, exiting, running, fps, k, money, glow_alpha
     global button_custom, details_custom, letter_custom, wallpaper_can_buy, wallpaper_custom, mistake_thing, letter_thing
-    global menu_window, shop_window, game_window
+    global menu_window, shop_window, game_window, wins, attempts_for_game, time_for_game
     pygame.display.set_caption('Wordy')
     size = width, height = 600, 800
     screen = pygame.display.set_mode(size, pygame.SRCALPHA)
     menu_window = Menu(screen, money, active=True)
     shop_window = Shop(screen, money, mistake_thing, letter_thing)
-    game_window = Game(screen)
 
     # Звуки
     sfx_start = pygame.mixer.Sound('data/sounds/menu/start.wav')
@@ -68,14 +72,31 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 exiting = True
-
             if menu_window.on_click(event):
                 butt_text = menu_window.on_click(event).get_text()
                 if butt_text == 'играть':
-                    game_window = Game(screen)
+                    if 2 <= wins <= 3:
+                        attempts_for_game = 4
+                        time_for_game = 120
+                    elif 4 <= wins <= 5:
+                        attempts_for_game = 3
+                        time_for_game = 90
+                    elif wins > 6:
+                        attempts_for_game = 2
+                        time_for_game = 60
+                    game_window = Game(screen, attempts=attempts_for_game, timer=time_for_game,active=True)
                     game_starting = True
-                    game_window.active = True
                     menu_window.active = False
+                    with open('data/config', 'w') as config:
+                        config.write(f'money {money}\n'
+                                     f'button {int(button_custom)}\n'
+                                     f'details {int(details_custom)}\n'
+                                     f'letter {int(letter_custom)}\n'
+                                     f'wallpaper {int(wallpaper_custom)}\n'
+                                     f'can_wallpaper {int(wallpaper_can_buy)}\n'
+                                     f'mistake {mistake_thing}\n'
+                                     f'letter {letter_thing}\n'
+                                     f'win {wins}')
                     sfx_click.play()
                 elif butt_text == 'ларек':
                     old_scene = menu_window
@@ -119,21 +140,55 @@ def main():
                     start_transition = True
                     sfx_click.play()
 
-                menu_window.update(money)
-                shop_window.update(money)
-                update_shop_buttons()
+            if isinstance(game_window, Game):
+                if game_window.on_click(event):
+                    butt_text = game_window.on_click(event).get_text()
+                    if butt_text == 'выйти' and game_window.display_sure is False:
+                        game_window.display_sure = True
+                        sfx_click.play()
+                    elif butt_text == 'выйти2' or butt_text == 'выйти3':
+                        if butt_text == 'выйти3':
+                            wins += 1
+                        menu_window.active = True
+                        game_window.active = False
+                        timer, transition_alpha, k = 60, 255, 4
+                        game_starting = True
+                        money += game_window.prize
+                        sfx_click.play()
+                    elif butt_text == 'заново' or butt_text == 'заново2':
+                        if butt_text == 'заново2':
+                            wins += 1
+                        if 2 <= wins <= 3:
+                            attempts_for_game = 4
+                            time_for_game = 120
+                        elif 4 <= wins <= 5:
+                            attempts_for_game = 3
+                            time_for_game = 90
+                        elif wins > 6:
+                            attempts_for_game = 2
+                            time_for_game = 60
+                        game_window = Game(screen, attempts=attempts_for_game, timer=time_for_game, active=True)
+                        money += game_window.prize
+                        sfx_click.play()
 
-            elif game_window.on_click(event):
-                butt_text = game_window.on_click(event).get_text()
-                if butt_text == 'выйти':
-                    menu_window.active = True
+            if event.type == MOUSEBUTTONDOWN:
+                if isinstance(game_window, Game):
+                    accepting = game_window.accept_exiting(event)
+                else:
+                    accepting = None
+                if accepting == 'yes':
                     game_window.active = False
+                    menu_window.active = True
                     timer, transition_alpha, k = 60, 255, 4
                     game_starting = True
                     sfx_click.play()
-                elif butt_text == 'заново':
-                    game_window = Game(screen)
-                sfx_click.play()
+                elif accepting == 'no':
+                    game_window.display_sure = False
+                    sfx_click.play()
+
+        menu_window.update(money)
+        shop_window.update(money)
+        update_shop_buttons()
 
         # Логика переключения окон
         if menu_window.active:
@@ -204,7 +259,8 @@ def transition():  # Переход между сценами
                              f'wallpaper {int(wallpaper_custom)}\n'
                              f'can_wallpaper {int(wallpaper_can_buy)}\n'
                              f'mistake {mistake_thing}\n'
-                             f'letter {letter_thing}')
+                             f'letter {letter_thing}\n'
+                             f'win {wins}')
             running = False
 
 
