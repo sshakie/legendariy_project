@@ -1,4 +1,4 @@
-import pygame
+import pygame, random
 from pygame import MOUSEBUTTONDOWN
 
 from data.code.Button import *
@@ -19,6 +19,7 @@ with open('data/config') as config:
     mistake_thing = int(config.split('\n')[6].split()[-1])
     letter_thing = int(config.split('\n')[7].split()[-1])
     wins = int(config.split('\n')[8].split()[-1])
+    captches = int(config.split('\n')[9].split()[-1])
 
 # Для перехода между сценами
 old_scene = None
@@ -37,6 +38,12 @@ timer = 0
 k = 4
 time_for_game = 180
 attempts_for_game = 5
+captcha = {'в цепи': (0, 0, 148, 64), 'высшую': (149, 0, 252, 113), 'беккерелем': (402, 0, 235, 76),
+           'возникновение': (638, 0, 207, 56), 'обусловливающая': (846, 0, 246, 60),
+           'распада ядер': (1093, 0, 98, 56), 'система': (1192, 0, 148, 37), 'мерно': (1341, 0, 79, 48),
+           'номера': (1421, 0, 151, 58),
+           'человеконенавистничество': (1573, 0, 245, 94), 'миролюбивый': (1396, 95, 199, 98),
+           'аэропорт': (1596, 95, 204, 99)}
 
 pygame.init()
 sfx_exit = pygame.mixer.Sound('data/sounds/menu/end.wav')
@@ -53,18 +60,22 @@ def main():
     global ws_width, old_scene, new_scene, start_transition, stop_transition, black_screen, glow_color
     global game_starting, timer, transition_alpha, exiting, running, fps, k, money, glow_alpha
     global button_custom, details_custom, letter_custom, wallpaper_can_buy, wallpaper_custom, mistake_thing, letter_thing
-    global menu_window, shop_window, game_window, wins, attempts_for_game, time_for_game
+    global menu_window, shop_window, game_window, wins, attempts_for_game, time_for_game, captches
     pygame.display.set_caption('Wordy')
     size = width, height = 600, 800
     screen = pygame.display.set_mode(size, pygame.SRCALPHA)
     menu_window = Menu(screen, money, active=True)
     shop_window = Shop(screen, money, mistake_thing, letter_thing)
+    playing = False
 
     # Звуки
     sfx_start = pygame.mixer.Sound('data/sounds/menu/start.wav')
     sfx_start.play()
     sfx_click = pygame.mixer.Sound('data/sounds/click.wav')
-    sfx_click_keyboard = pygame.mixer.Sound('data/sounds/game/press.wav')
+
+    image = ''
+    captcha_word = ''
+    writing = ''
 
     clock = pygame.time.Clock()
     update_shop_buttons()
@@ -84,7 +95,8 @@ def main():
                     elif wins > 6:
                         attempts_for_game = 2
                         time_for_game = 60
-                    game_window = Game(screen, attempts=attempts_for_game, timer=time_for_game,active=True)
+                    game_window = Game(screen, mistake_thing, letter_thing, attempts=attempts_for_game,
+                                       timer=time_for_game, active=True)
                     game_starting = True
                     menu_window.active = False
                     with open('data/config', 'w') as config:
@@ -96,7 +108,8 @@ def main():
                                      f'can_wallpaper {int(wallpaper_can_buy)}\n'
                                      f'mistake {mistake_thing}\n'
                                      f'letter {letter_thing}\n'
-                                     f'win {wins}')
+                                     f'win {wins}\n'
+                                     f'captcha {captches}')
                     sfx_click.play()
                 elif butt_text == 'ларек':
                     old_scene = menu_window
@@ -107,34 +120,40 @@ def main():
                     exiting = True
             elif shop_window.on_click(event):
                 butt_text = shop_window.on_click(event).get_text()
-                if butt_text == 'право на ошибку':
-                    if buy(10):
+                if butt_text == 'право на ошибку' and playing is False:
+                    if buy(45):
                         mistake_thing += 1
                         shop_window.mistake_count = shop_window.font.render(str(mistake_thing), True, (100, 0, 0))
-                elif butt_text == 'раскрыть букву':
-                    if buy(25):
+                elif butt_text == 'раскрыть букву' and playing is False:
+                    if buy(35):
                         letter_thing += 1
                         shop_window.letter_count = shop_window.font.render(str(letter_thing), True, (100, 0, 0))
-                elif butt_text == 'игра-капча':
-                    money += 15
-                elif butt_text == 'кнопки':
+                elif butt_text == 'игра-капча' and playing is False and captches < 10:
+                    if buy(25):
+                        playing = True
+                        pair = random.choice(list(captcha.items()))
+                        image = load_image('data/textures/captcha.png').subsurface(pair[-1])
+                        image = pygame.transform.scale(image, (203, 112))
+                        captcha_word = pair[0]
+                        writing = ''
+                elif butt_text == 'кнопки' and playing is False:
                     if button_custom is False:
-                        if buy(30):
+                        if buy(75):
                             button_custom = True
-                elif butt_text == 'детали':
+                elif butt_text == 'детали' and playing is False:
                     if details_custom is False:
-                        if buy(45):
+                        if buy(100):
                             details_custom = True
-                elif butt_text == 'буквы':
+                elif butt_text == 'буквы' and playing is False:
                     if letter_custom is False:
                         if buy(50):
                             letter_custom = True
-                elif butt_text == 'фон':
+                elif butt_text == 'фон' and playing is False:
                     if wallpaper_can_buy and wallpaper_custom is False:
-                        if buy(65):
+                        if buy(250):
                             wallpaper_custom = True
 
-                elif butt_text == 'назад':
+                elif butt_text == 'назад' and playing is False:
                     old_scene = shop_window
                     new_scene = menu_window
                     start_transition = True
@@ -167,7 +186,8 @@ def main():
                         elif wins > 6:
                             attempts_for_game = 2
                             time_for_game = 60
-                        game_window = Game(screen, attempts=attempts_for_game, timer=time_for_game, active=True)
+                        game_window = Game(screen, mistake_thing, letter_thing, attempts=attempts_for_game,
+                                           timer=time_for_game, active=True)
                         money += game_window.prize
                         sfx_click.play()
 
@@ -185,6 +205,21 @@ def main():
                 elif accepting == 'no':
                     game_window.display_sure = False
                     sfx_click.play()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_BACKSPACE:
+                    writing = writing[:-1]
+                    pygame.mixer.Sound('data/sounds/game/backspace.wav').play()
+                elif event.key == pygame.K_RETURN:
+                    if writing == captcha_word:
+                        money += 35
+                        pygame.mixer.Sound('data/sounds/shop/win.wav').play()
+                        captches += 1
+                    else:
+                        pygame.mixer.Sound('data/sounds/shop/lose.wav').play()
+                    playing = False
+                elif event.unicode in 'абвгдежзийклмнопрстуфхцчшщъыьэюя ':
+                    writing += event.unicode
+                    pygame.mixer.Sound('data/sounds/game/press.wav').play()
 
         menu_window.update(money)
         shop_window.update(money)
@@ -195,11 +230,18 @@ def main():
             menu_window.selecting_button()
             menu_window.render()
         elif shop_window.active:
-            shop_window.selecting_button()
+            if playing is False:
+                shop_window.selecting_button()
             shop_window.render()
         elif game_window.active:
             game_window.selecting_button()
             game_window.render()
+
+        if playing:
+            screen.blit(load_image('data/textures/captcha-screen.png'), (0, 0))
+            screen.blit(image, (358, 208))
+            font = pygame.font.Font('data/myy.ttf', 20)
+            screen.blit((font.render(writing, True, (255, 255, 255))), (364, 326))
 
         transition()
         glow_alpha = max(0, glow_alpha - 2)
@@ -260,7 +302,8 @@ def transition():  # Переход между сценами
                              f'can_wallpaper {int(wallpaper_can_buy)}\n'
                              f'mistake {mistake_thing}\n'
                              f'letter {letter_thing}\n'
-                             f'win {wins}')
+                             f'win {wins}\n'
+                             f'captcha {captches}')
             running = False
 
 

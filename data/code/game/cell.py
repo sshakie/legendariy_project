@@ -72,7 +72,8 @@ class Cell(pygame.sprite.Sprite):
         elif self.type == 1:
             self.image = load_image('data/textures/ui.png').subsurface(random.choice(right))  # Правильная буква
         elif self.type == 2:
-            self.image = load_image('data/textures/ui.png').subsurface(random.choice(wrong_position))  # Неправильная позиция
+            self.image = load_image('data/textures/ui.png').subsurface(
+                random.choice(wrong_position))  # Неправильная позиция
         else:
             self.image = load_image('data/textures/ui.png').subsurface(random.choice(wrong))  # Неправильная буква
 

@@ -7,7 +7,7 @@ from data.code.game.logic import Logic
 
 
 class Game:
-    def __init__(self, screen, attempts=5, timer=180, len_word=5, active=False):
+    def __init__(self, screen, mistake, letter, attempts=5, timer=180, len_word=5, active=False):
         self.screen = screen
         self.active = active
         self.clock = pygame.time.Clock()
@@ -19,6 +19,7 @@ class Game:
         self.k = 1.0
         self.prize = 0
         self.timer = timer + 5
+        self.mistake = False
 
         # Интерфейс
         self.all_sprites = pygame.sprite.Group()
@@ -44,15 +45,15 @@ class Game:
         self.attempt_label = self.font.render(f'Попыток: {self.attempts - self.count_string}', True, (0, 0, 0))
 
         # Настройка
-        x_0 = 50 # Начальная позиция по х
-        y_0 = 100 # Начальная позиция по у
-        width = 110 # Ширина
-        height = 83 # Высота
-        width_between_cell = 100 # Расстояние от левого края одного квадрата, до левого края другого
-        height_between_cell = 98 # Расстояние от верхнего края одного квадрата, до верхнего края другого
+        x_0 = 50  # Начальная позиция по х
+        y_0 = 100  # Начальная позиция по у
+        width = 110  # Ширина
+        height = 83  # Высота
+        width_between_cell = 100  # Расстояние от левого края одного квадрата, до левого края другого
+        height_between_cell = 98  # Расстояние от верхнего края одного квадрата, до верхнего края другого
         self.red_rect = pygame.Rect(x_0, y_0, 509, height)
 
-        if self.len_word == 6: # TODO Расставить правильно значения
+        if self.len_word == 6:  # TODO Расставить правильно значения
             x_0 = 45  # Начальная позиция по х
             y_0 = 100  # Начальная позиция по у
             width = 96  # Ширина
@@ -60,7 +61,7 @@ class Game:
             width_between_cell = 86  # Расстояние от левого края одного квадрата, до левого края другого
             height_between_cell = 98  # Расстояние от верхнего края одного квадрата, до верхнего края другого
             self.red_rect = pygame.Rect(x_0, y_0, 526, height)
-        elif self.len_word == 7: # TODO Расставить правильно значения
+        elif self.len_word == 7:  # TODO Расставить правильно значения
             x_0 = 41  # Начальная позиция по х
             y_0 = 100  # Начальная позиция по у
             width = 84  # Ширина
@@ -69,7 +70,7 @@ class Game:
             height_between_cell = 98  # Расстояние от верхнего края одного квадрата, до верхнего края другого
             self.red_rect = pygame.Rect(x_0, y_0, 528, height)
 
-        elif self.len_word == 8: # TODO Расставить правильно значения
+        elif self.len_word == 8:  # TODO Расставить правильно значения
             x_0 = 40  # Начальная позиция по х
             y_0 = 100  # Начальная позиция по у
             width = 76  # Ширина
@@ -79,14 +80,13 @@ class Game:
             self.red_rect = pygame.Rect(x_0, y_0, 538, height)
 
         self.guessing = [
-            {x: Cell(x_0 + x * width_between_cell, y_0 + y * height_between_cell, width, height, self.text_font, 50, text_color=(0, 0, 0)) for x in range(self.len_word)}
+            {x: Cell(x_0 + x * width_between_cell, y_0 + y * height_between_cell, width, height, self.text_font, 50,
+                     text_color=(0, 0, 0)) for x in range(self.len_word)}
             for y in range(self.attempts)]
-
 
         self.transparency_red_rect = 0
 
         self.border_radius = 5
-
 
         self.keyboard = []
         self.logic = Logic(f'data/dictionary/words-length-{self.len_word}.txt')
@@ -96,14 +96,16 @@ class Game:
             x_0, y_0, l = 33, 645, 45
             kb = Button(x_0 + l * i, y_0, 40, 40, letter, 30, crop=(0, 709, 44, 44))
             self.keyboard.append(kb)
-        for i, letter in enumerate('фывапролджэ'):
-            x_0, y_0, l = 55, 695, 45
+        for i, letter in enumerate('фывапролджэ<'):
+            x_0, y_0, l = 33, 695, 45
             kb = Button(x_0 + l * i, y_0, 40, 40, letter, 30, crop=(0, 709, 44, 44))
             self.keyboard.append(kb)
         for i, letter in enumerate('ячсмитьбю'):
             x_0, y_0, l = 100, 745, 45
             kb = Button(x_0 + l * i, y_0, 40, 40, letter, 30, crop=(0, 709, 44, 44))
             self.keyboard.append(kb)
+        self.enter = Button(505, 745, 85, 40, 'enter', 0, crop=(308, 709, 85, 43))
+        self.keyboard.append(self.enter)
 
     def render(self):  # Функция для рендера интерфейса
         self.attempt_label = self.font.render(f'Попыток: {self.attempts - self.count_string}', True, (0, 0, 0))
@@ -128,15 +130,18 @@ class Game:
         for i in self.keyboard:
             self.screen.blit(*i.get_rect_coord())
 
+        if self.noww == 0:
+            self.win_lose_flg = False
         if self.win_lose_flg is not None:
             if self.win_lose_flg:  # Выигрыш
                 self.screen.blit(self.win_display, (0, 0))
                 prize = round(10 * self.k)
                 self.screen.blit((self.font2.render(str(prize), True, (255, 106, 0))), (380, 320))
                 self.screen.blit(self.coin, (415, 321))
-            elif self.win_lose_flg is False or self.noww == 0:
+            elif self.win_lose_flg is False:
                 self.screen.blit(self.lose_display, (0, 0))
-                self.screen.blit((self.font2.render(self.logic.get_right_word().lower(), True, (255, 106, 0))), (323, 305))
+                self.screen.blit((self.font2.render(self.logic.get_right_word().lower(), True, (255, 106, 0))),
+                                 (323, 305))
             self.screen.blit(*self.reset_button.get_rect_coord())
             self.screen.blit(*self.exit_button_2.get_rect_coord())
         else:
@@ -180,8 +185,9 @@ class Game:
         if button:
             if isinstance(button, Button):
                 btn_text = button.get_text()
-                if btn_text == 'backspace':
+                if btn_text == '<':
                     self.input_word = self.input_word[:-1]
+                    self.guessing[self.count_string][len(self.input_word)].set_letter('', -1)
                     pygame.mixer.Sound('data/sounds/game/backspace.wav').play()
                 elif btn_text == 'enter':
                     self.return_press()
@@ -236,16 +242,28 @@ class Game:
                 self.transparency_red_rect = 200
                 return
             else:
+                w = 0
+                w_p = 0
+                r = 0
                 for i, v in enumerate(data):
                     if v is False:
                         self.guessing[self.count_string][i].set_letter(self.input_word[i], 0)  #
                         self.get_key(self.input_word[i]).set_image(random.choice(wrong))
+                        w += 1
                     elif v == 'неверное положение':
                         self.guessing[self.count_string][i].set_letter(self.input_word[i], 2)  #
                         self.get_key(self.input_word[i]).set_image(random.choice(wrong_position))
+                        w_p += 1
                     elif v is True:
                         self.guessing[self.count_string][i].set_letter(self.input_word[i], 1)  # (132, 709, 43, 43)
                         self.get_key(self.input_word[i]).set_image(random.choice(right))
+                        r += 1
+                if r != 0:
+                    pygame.mixer.Sound('data/sounds/game/right-letter.wav').play()
+                elif w_p != 0:
+                    pygame.mixer.Sound('data/sounds/game/wrong_pos.wav').play()
+                elif w != 0:
+                    pygame.mixer.Sound('data/sounds/game/all-wrong.wav').play()
             self.count_string += 1
             self.check_win()
 
@@ -261,7 +279,8 @@ class Game:
             self.exit_button_2 = Button(154, 466, 308, 91, 'выйти3', 0, type=11)
             with open('data/config') as config:
                 config = config.read()
-                a = [bool(int(config.split('\n')[1].split()[-1])), bool(int(config.split('\n')[2].split()[-1])), bool(int(config.split('\n')[3].split()[-1])), bool(int(config.split('\n')[5].split()[-1]))]
+                a = [bool(int(config.split('\n')[1].split()[-1])), bool(int(config.split('\n')[2].split()[-1])),
+                     bool(int(config.split('\n')[3].split()[-1])), bool(int(config.split('\n')[5].split()[-1]))]
                 self.k *= (1 + (0.2 * a.count(True)))
             if self.count_string == 1:
                 self.k *= 1.4
