@@ -164,7 +164,7 @@ class Game:
             self.screen.blit(red_surface, (0, 0))
             self.transparency_red_rect = max(0, self.transparency_red_rect - 3)
             self.transparency_green_rect = max(0, self.transparency_green_rect - 3)
-
+            self.screen.blit(*self.exit_button.get_rect_coord())
         if self.display_sure:
             self.screen.blit(load_image('data/textures/do-you-sure.png'), (0, 0))
 
