@@ -209,7 +209,9 @@ def main():
                 elif accepting == 'no':
                     game_window.display_sure = False
                     sfx_click.play()
-            if event.type == pygame.KEYDOWN:
+
+
+            if event.type == pygame.KEYDOWN and playing:
                 if event.key == pygame.K_BACKSPACE:
                     writing = writing[:-1]
                     pygame.mixer.Sound('data/sounds/game/backspace.wav').play()
