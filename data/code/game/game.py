@@ -20,6 +20,7 @@ class Game:
         self.prize = 0
         self.mistake = bool(mistake)
         self.timer = timer + 5
+        self.ended = False
 
         self.right_letters = {i: '' for i in range(self.len_word)}
 
@@ -218,8 +219,9 @@ class Game:
                     self.return_press()
                     pygame.mixer.Sound('data/sounds/game/enter.wav').play()
                 elif event.unicode in 'абвгдежзийклмнопрстуфхцчшщъыьэюя':
-                    self.input_word += event.unicode
-                    pygame.mixer.Sound('data/sounds/game/press.wav').play()
+                    if event.unicode.isalpha():
+                        self.input_word += event.unicode
+                        pygame.mixer.Sound('data/sounds/game/press.wav').play()
 
 
                 # print(event.unicode)
@@ -317,7 +319,7 @@ class Game:
             self.win_lose_flg = True
             self.reset_button = Button(154, 354, 309, 91, 'заново2', 0, type=10)
             self.exit_button_2 = Button(154, 466, 308, 91, 'выйти3', 0, type=11)
-            with open('data/config') as config:
+            with open('data/config.txt') as config:
                 config = config.read()
                 a = [bool(int(config.split('\n')[1].split()[-1])), bool(int(config.split('\n')[2].split()[-1])),
                      bool(int(config.split('\n')[3].split()[-1])), bool(int(config.split('\n')[5].split()[-1]))]
@@ -325,9 +327,13 @@ class Game:
             if self.count_string == 1:
                 self.k *= 1.4
             self.prize = round(10 * self.k)
-            pygame.mixer.Sound('data/sounds/game/win.wav').play()
+            if self.ended is False:
+                pygame.mixer.Sound('data/sounds/game/win.wav').play()
+            self.ended = True
         elif self.count_string == self.attempts:
             self.win_lose_flg = False
             self.reset_button = Button(154, 354, 309, 91, 'заново', 0, type=8)
             self.exit_button_2 = Button(154, 466, 308, 91, 'выйти2', 0, type=9)
-            pygame.mixer.Sound('data/sounds/game/lose.wav').play()
+            if self.ended is False:
+                pygame.mixer.Sound('data/sounds/game/lose.wav').play()
+            self.ended = True
