@@ -8,7 +8,7 @@ class Cell(pygame.sprite.Sprite):
         self.x = x
         self.y = y
         self.type = None
-        self.letter = None
+        self.letter = ''
         self.font_size = font_size
         self.text_color = text_color
 
@@ -74,6 +74,8 @@ class Cell(pygame.sprite.Sprite):
         elif self.type == 2:
             self.image = load_image('data/textures/ui.png').subsurface(
                 random.choice(wrong_position))  # Неправильная позиция
+        elif self.type == -2:
+            self.image = load_image('data/textures/ui.png').subsurface((3, 254, 8, 8))
         else:
             self.image = load_image('data/textures/ui.png').subsurface(random.choice(wrong))  # Неправильная буква
 

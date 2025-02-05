@@ -1,3 +1,5 @@
+import os
+
 import pygame, random
 from pygame import MOUSEBUTTONDOWN
 
@@ -8,6 +10,7 @@ from data.code.shop.shop import Shop
 
 running = True
 fps = 60
+
 with open('data/config') as config:
     config = config.read()
     money = int(config.split('\n')[0].split()[-1])
@@ -186,6 +189,7 @@ def main():
                         elif wins > 6:
                             attempts_for_game = 2
                             time_for_game = 60
+
                         game_window = Game(screen, mistake_thing, letter_thing, attempts=attempts_for_game,
                                            timer=time_for_game, active=True)
                         money += game_window.prize
