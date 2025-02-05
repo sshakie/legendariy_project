@@ -8,6 +8,8 @@ class Shop:
         self.screen = screen
         self.active = active
         self.money = money
+        self.mistakes = mistake
+        self.letters = letter
         self.text_font = 'data/myy.ttf'
         self.font = pygame.font.Font(self.text_font, 30)
         self.clock = pygame.time.Clock()
@@ -24,8 +26,8 @@ class Shop:
         self.upgrade_text = pygame.image.load('data/textures/ui.png').subsurface((299, 0, 294, 57))
         self.customization_text = pygame.image.load('data/textures/ui.png').subsurface((299, 58, 335, 56))
         self.money_label = self.font.render(str(self.money), True, (100, 0, 0))
-        self.mistake_count = self.font.render(str(mistake), True, (100, 0, 0))
-        self.letter_count = self.font.render(str(letter), True, (100, 0, 0))
+        self.mistake_count = self.font.render(str(self.mistakes), True, (100, 0, 0))
+        self.letter_count = self.font.render(str(self.letters), True, (100, 0, 0))
         self.prices = pygame.image.load('data/textures/prices.png')
 
         # Кнопки
@@ -84,7 +86,11 @@ class Shop:
                     else:
                         self.sfx_select.play()
 
-    def update(self, money):  # Подгрузка данных из main для обновления
+    def update(self, money, mistake, letter):  # Подгрузка данных из main для обновления
         self.money = money
+        self.mistakes = mistake
+        self.letters = letter
 
         self.money_label = self.font.render(str(self.money), True, (100, 0, 0))
+        self.mistake_count = self.font.render(str(self.mistakes), True, (100, 0, 0))
+        self.letter_count = self.font.render(str(self.letters), True, (100, 0, 0))

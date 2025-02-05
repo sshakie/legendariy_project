@@ -3,14 +3,11 @@ import random
 
 class Logic:
     def __init__(self, dictionary_path=None):
+        with open(dictionary_path, 'r', encoding='utf-8') as dictionary:
+            self.dictionary = dictionary.read().split('\n')
 
-        try:
-            with open(dictionary_path, 'r', encoding='utf-8') as dictionary:
-                self.dictionary = dictionary.read().split('\n')
-        except Exception:
-            pass
 
-        self.word = random.choice(self.dictionary)
+        self.word = random.choice(self.dictionary).lower()
         print(self.word)
 
 

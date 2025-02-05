@@ -1,3 +1,5 @@
+import os
+
 import pygame, random
 from pygame import MOUSEBUTTONDOWN
 
@@ -8,7 +10,8 @@ from data.code.shop.shop import Shop
 
 running = True
 fps = 60
-with open('data/config') as config:
+
+with open('data/config.txt') as config:
     config = config.read()
     money = int(config.split('\n')[0].split()[-1])
     button_custom = bool(int(config.split('\n')[1].split()[-1]))
@@ -70,12 +73,16 @@ def main():
 
     # Звуки
     sfx_start = pygame.mixer.Sound('data/sounds/menu/start.wav')
+    pygame.mixer.music.load('data/sounds/menu/ost.wav')
+    pygame.mixer.music.play(loops=-1)
     sfx_start.play()
     sfx_click = pygame.mixer.Sound('data/sounds/click.wav')
 
     image = ''
     captcha_word = ''
     writing = ''
+    old_mistake = mistake_thing
+    old_letter = letter_thing
 
     clock = pygame.time.Clock()
     update_shop_buttons()
@@ -97,9 +104,15 @@ def main():
                         time_for_game = 60
                     game_window = Game(screen, mistake_thing, letter_thing, attempts=attempts_for_game,
                                        timer=time_for_game, active=True)
+                    if mistake_thing > 0:
+                        old_mistake = mistake_thing
+                        mistake_thing -= 1
+                    if letter_thing > 0:
+                        old_letter = letter_thing
+                        letter_thing -= 1
                     game_starting = True
                     menu_window.active = False
-                    with open('data/config', 'w') as config:
+                    with open('data/config.txt', 'w') as config:
                         config.write(f'money {money}\n'
                                      f'button {int(button_custom)}\n'
                                      f'details {int(details_custom)}\n'
@@ -111,11 +124,15 @@ def main():
                                      f'win {wins}\n'
                                      f'captcha {captches}')
                     sfx_click.play()
+                    pygame.mixer.music.load('data/sounds/game/ost (by zer).wav')
+                    pygame.mixer.music.play(loops=-1)
                 elif butt_text == 'ларек':
                     old_scene = menu_window
                     new_scene = shop_window
                     start_transition = True
                     sfx_click.play()
+                    pygame.mixer.music.load('data/sounds/shop/ost.wav')
+                    pygame.mixer.music.play(loops=-1)
                 elif butt_text == 'выход':
                     exiting = True
             elif shop_window.on_click(event):
@@ -158,6 +175,9 @@ def main():
                     new_scene = menu_window
                     start_transition = True
                     sfx_click.play()
+                    pygame.mixer.music.load('data/sounds/menu/ost.wav')
+                    pygame.mixer.music.play(loops=-1)
+                update_shop_buttons()
 
             if isinstance(game_window, Game):
                 if game_window.on_click(event):
@@ -174,6 +194,9 @@ def main():
                         game_starting = True
                         money += game_window.prize
                         sfx_click.play()
+                        pygame.mixer.music.load('data/sounds/menu/ost.wav')
+                        pygame.mixer.music.play(loops=-1)
+                        game_window = ''
                     elif butt_text == 'заново' or butt_text == 'заново2':
                         if butt_text == 'заново2':
                             wins += 1
@@ -186,6 +209,7 @@ def main():
                         elif wins > 6:
                             attempts_for_game = 2
                             time_for_game = 60
+
                         game_window = Game(screen, mistake_thing, letter_thing, attempts=attempts_for_game,
                                            timer=time_for_game, active=True)
                         money += game_window.prize
@@ -202,10 +226,17 @@ def main():
                     timer, transition_alpha, k = 60, 255, 4
                     game_starting = True
                     sfx_click.play()
+                    game_window = ''
+                    if old_mistake > 0:
+                        mistake_thing += 1
+                    if old_letter > 0:
+                        letter_thing += 1
+                    pygame.mixer.music.load('data/sounds/menu/ost.wav')
+                    pygame.mixer.music.play(loops=-1)
                 elif accepting == 'no':
                     game_window.display_sure = False
                     sfx_click.play()
-            if event.type == pygame.KEYDOWN:
+            if event.type == pygame.KEYDOWN and playing:
                 if event.key == pygame.K_BACKSPACE:
                     writing = writing[:-1]
                     pygame.mixer.Sound('data/sounds/game/backspace.wav').play()
@@ -222,8 +253,7 @@ def main():
                     pygame.mixer.Sound('data/sounds/game/press.wav').play()
 
         menu_window.update(money)
-        shop_window.update(money)
-        update_shop_buttons()
+        shop_window.update(money, mistake_thing, letter_thing)
 
         # Логика переключения окон
         if menu_window.active:
@@ -291,9 +321,10 @@ def transition():  # Переход между сценами
     if exiting:
         if transition_alpha == 0:
             sfx_exit.play()
+            pygame.mixer.music.fadeout(250)
         transition_alpha += 5
         if transition_alpha == 250:
-            with open('data/config', 'w') as config:
+            with open('data/config.txt', 'w') as config:
                 config.write(f'money {money}\n'
                              f'button {int(button_custom)}\n'
                              f'details {int(details_custom)}\n'
