@@ -1,10 +1,10 @@
-money 248
-button 1
+money 5010
+button 0
 details 0
 letter 0
 wallpaper 0
 can_wallpaper 0
 mistake 0
 letter 0
-win 4
-captcha 1
+win 1
+captcha 0
