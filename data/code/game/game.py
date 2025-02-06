@@ -31,6 +31,7 @@ class Game:
         self.display_sure = False
         self.win_lose_flg = None
         self.ended = False  # Нужно чтобы звук не дублировался на экране выигрыша/проигрыша
+
         self.transparency_red_rect = 0
         self.transparency_green_rect = 0
 
