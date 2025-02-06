@@ -1,11 +1,8 @@
 import pygame
-from scipy.cluster.hierarchy import is_isomorphic
 
 
-def load_image(name, color_key=None):  # Функция для загрузки текстур (из учебника)
-    fullname = name
+def load_image(fullname, color_key=None):  # Функция для загрузки текстур
     image = pygame.image.load(fullname)
-
     if color_key is not None:
         image = image.convert()
         if color_key == -1:
@@ -23,12 +20,12 @@ class Button(pygame.sprite.Sprite):
         self.width = width
         self.height = height
         self.selected = False
-        self.text = text
-        self.text_font = 'data/myy.ttf'
-        self.offset = offset
-
         self.type = type
-        self.image_path = "data/textures/button-ui.png"
+        self.text = text
+        self.offset = offset
+        self.text_font = 'data/myy.ttf'
+        self.image_path = 'data/textures/button-ui.png'
+
         # 1: играть, 2: ларек, 3: выход, 4: кнопка-в-ларьке, 5: мал-кнопка-в-ларьке, 6: назад (ларек), 7: выйти (игра)
         # 8: заново (проигрыш), 9: выйти (проигрыш), 10: заново (выигрыш), 11: выйти (выигрыш)
         self.im2tp = {0: [crop, selected_crop],
@@ -46,38 +43,34 @@ class Button(pygame.sprite.Sprite):
         if type != 0:
             crop, selected_crop = self.im2tp[type]
 
-        self.surf = pygame.Surface((width, height), pygame.SRCALPHA)
-        self.rect = self.surf.get_rect(topleft=(x, y))
-        pygame.draw.rect(self.surf, (255, 255, 255, 0), self.rect)
+        self.screen = pygame.Surface((width, height), pygame.SRCALPHA)
+        self.rect = self.screen.get_rect(topleft=(x, y))
 
-        # Текстуры для кнопки
         self.base_image = load_image(self.image_path).subsurface(crop)
         self.image = pygame.transform.scale(self.base_image, (width, height))
         self.selected_image = None
-        if selected_crop:  # Если у кнопки есть выделенная текстурка, то ставим его
+        if selected_crop:  # Если у кнопки есть текстура выделения кнопки, то настраиваем её
             self.selected_image = load_image(self.image_path).subsurface((selected_crop, crop[1], crop[2], crop[3]))
             self.selected_image = pygame.transform.scale(self.selected_image, (width, height))
 
-        # Рендер кнопки
-        self.surf.blit(self.image, (0, 0))
+        self.screen.blit(self.image, (0, 0))
 
         # Текст на кнопке
         self.font = pygame.font.Font(self.text_font, font_size)
-        if isinstance(self.text, list):
+        if isinstance(self.text, list):  # "Переносит строчку" при помощи листа
             self.text_label = [self.font.render(i, True, (0, 0, 0)) for i in self.text]
             self.text_x = (width // 2 - self.text_label[0].get_width() // 2) + self.offset[0]
-            self.text_y = [((height // 2 - i.get_height() // 2) - 10 + i.get_height() * n + self.offset[1]) for n, i in enumerate(self.text_label)]
+            self.text_y = [((height // 2 - i.get_height() // 2) - 10 + i.get_height() * n + self.offset[1]) for n, i in
+                           enumerate(self.text_label)]
             for i in range(len(self.text_label)):
-                self.surf.blit(self.text_label[i], (self.text_x, self.text_y[i]))
+                self.screen.blit(self.text_label[i], (self.text_x, self.text_y[i]))
         else:
             self.text_label = self.font.render(self.text, True, (0, 0, 0))
             self.text_x = width // 2 - self.text_label.get_width() // 2 + self.offset[0]
             self.text_y = (height // 2 - self.text_label.get_height() // 2) + self.offset[1]
-            self.surf.blit(self.text_label, (self.text_x, self.text_y))
+            self.screen.blit(self.text_label, (self.text_x, self.text_y))
 
-
-
-    def check_cursor_position(self):  # Функция для проверки местоположения курсора
+    def check_cursor_position(self):  # Функция для проверки положения курсора
         return self.rect.collidepoint(pygame.mouse.get_pos())
 
     def is_clicked(self, event):  # Функция для проверки нажатия
@@ -86,7 +79,7 @@ class Button(pygame.sprite.Sprite):
         return False
 
     def get_rect_coord(self):  # Фукнция для получения координат "хитбокса"
-        return self.surf, self.rect.topleft
+        return self.screen, self.rect.topleft
 
     def get_text(self):  # Функция для получения текста кнопки
         if isinstance(self.text, list):
@@ -103,21 +96,22 @@ class Button(pygame.sprite.Sprite):
             self.selected = False
 
         # Рендер
-        self.surf.blit(self.image, (0, 0))
+        self.screen.blit(self.image, (0, 0))
         if isinstance(self.text_label, list):
             for i in range(len(self.text_label)):
-                self.surf.blit(self.text_label[i], (self.text_x, self.text_y[i]))
+                self.screen.blit(self.text_label[i], (self.text_x, self.text_y[i]))
         else:
-            self.surf.blit(self.text_label, (self.text_x, self.text_y))
+            self.screen.blit(self.text_label, (self.text_x, self.text_y))
         return changed != self.selected and self.selected
 
     def set_image(self, crop: tuple[int, int, int, int] = None,
-                  selected_crop=None):  # Функция для постановки новых текстурок
+                  selected_crop=None):  # Функция для постановки новых текстур
         self.base_image = load_image(self.image_path).subsurface(crop)
         self.image = pygame.transform.scale(self.base_image, (self.width, self.height))
         self.selected_image = None
-        if selected_crop:  # Если у кнопки есть выделенная текстурка, то ставим его
+        if selected_crop:  # Если у кнопки есть текстура выделения кнопки, то настраиваем её
             self.selected_image = load_image(self.image_path).subsurface((selected_crop, crop[1], crop[2], crop[3]))
             self.selected_image = pygame.transform.scale(self.selected_image, (self.width, self.height))
-        self.surf.blit(self.image, (0, 0))
-        self.surf.blit(self.text_label, (self.text_x, self.text_y))
+
+        self.screen.blit(self.image, (0, 0))
+        self.screen.blit(self.text_label, (self.text_x, self.text_y))

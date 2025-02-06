@@ -102,8 +102,7 @@ def main():
                     elif wins > 6:
                         attempts_for_game = 2
                         time_for_game = 60
-                    game_window = Game(screen, mistake_thing, letter_thing, attempts=attempts_for_game,
-                                       timer=time_for_game, active=True)
+                    game_window = Game(screen, attempts=attempts_for_game, timer=time_for_game, mistake_goods=mistake_thing, letter_goods=letter_thing, active=True)
                     if mistake_thing > 0:
                         old_mistake = mistake_thing
                         mistake_thing -= 1
@@ -185,7 +184,7 @@ def main():
                     if butt_text == 'выйти' and game_window.display_sure is False:
                         game_window.display_sure = True
                         sfx_click.play()
-                    elif butt_text == 'выйти2' or butt_text == 'выйти3':
+                    if butt_text == 'выйти2' or butt_text == 'выйти3':
                         if butt_text == 'выйти3':
                             wins += 1
                         menu_window.active = True
@@ -209,7 +208,6 @@ def main():
                         elif wins > 6:
                             attempts_for_game = 2
                             time_for_game = 60
-
                         game_window = Game(screen, mistake_thing, letter_thing, attempts=attempts_for_game,
                                            timer=time_for_game, active=True)
                         money += game_window.prize
@@ -252,8 +250,10 @@ def main():
                     writing += event.unicode
                     pygame.mixer.Sound('data/sounds/game/press.wav').play()
 
-        menu_window.update(money)
-        shop_window.update(money, mistake_thing, letter_thing)
+        menu_window.money = money
+        shop_window.money = money
+        shop_window.mistake_goods = mistake_thing
+        shop_window.letter_goods = letter_thing
 
         # Логика переключения окон
         if menu_window.active:
