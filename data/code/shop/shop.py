@@ -16,6 +16,12 @@ class Shop:
         self.letter_goods = letter_goods
         self.fps = 60
 
+        # Для игры-капчи
+        self.playing = False
+        self.captcha_image = ''
+        self.captcha_word = ''
+        self.writing = ''
+
         # Интерфейс (основное)
         self.all_sprites = pygame.sprite.Group()  # для анимированного фона
         self.wallpaper = AnimatedSprite(load_image('data/textures/wallpapers/animated-wallpaper2.png'), 60, 1, 0, 0,
@@ -68,6 +74,13 @@ class Shop:
         self.screen.blit(mistake_label, (44, 245))
         self.screen.blit(letter_label, (204, 245))
 
+        # Отображение игры-капчи
+        if self.playing:
+            self.screen.blit(load_image('data/textures/captcha-screen.png'), (0, 0))
+            self.screen.blit(self.captcha_image, (358, 208))
+            font = pygame.font.Font('data/myy.ttf', 20)
+            self.screen.blit((font.render(self.writing, True, (255, 255, 255))), (364, 326))
+
         self.clock.tick(self.fps)
 
     def on_click(self, event):  # Функция нажатия кнопки
@@ -88,3 +101,20 @@ class Shop:
                         pygame.mixer.Sound('data/sounds/select_2.wav').play()
                     else:
                         pygame.mixer.Sound('data/sounds/select.wav').play()
+
+    def key_pressing(self, event):
+        if event.type == pygame.KEYDOWN and self.playing:
+            if event.key == pygame.K_BACKSPACE:
+                self.writing = self.writing[:-1]
+                pygame.mixer.Sound('data/sounds/game/backspace.wav').play()
+            elif event.key == pygame.K_RETURN:
+                self.playing = False
+                if self.writing == self.captcha_word:
+                    pygame.mixer.Sound('data/sounds/shop/win.wav').play()
+                    return True
+                pygame.mixer.Sound('data/sounds/shop/lose.wav').play()
+                return False
+            elif event.unicode in 'абвгдежзийклмнопрстуфхцчшщъыьэюя ':
+                self.writing += event.unicode
+                pygame.mixer.Sound('data/sounds/game/press.wav').play()
+            return None
