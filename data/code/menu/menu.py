@@ -7,7 +7,7 @@ class Menu:
     def __init__(self, screen, money, active=False):
         self.active = active
         self.screen = screen
-        self.text_font = 'data/myy.ttf'
+        self.text_font = 'data/myy-font.ttf'
         self.font = pygame.font.Font(self.text_font, 30)
         self.clock = pygame.time.Clock()
 
@@ -16,7 +16,7 @@ class Menu:
 
         # Интерфейс (основное)
         self.all_sprites = pygame.sprite.Group()  # для анимированного фона
-        self.wallpaper = AnimatedSprite(load_image('data/textures/wallpapers/animated-wallpaper1.png'), 56, 1, 0, 0,
+        self.wallpaper = AnimatedSprite(load_image('data/textures/wallpapers/gray/animated-wallpaper1.png'), 56, 1, 0, 0,
                                         self.all_sprites)
         self.title = pygame.image.load('data/textures/ui.png').subsurface((0, 0, 298, 108))
         self.coin = pygame.image.load('data/textures/ui.png').subsurface((594, 0, 33, 30))

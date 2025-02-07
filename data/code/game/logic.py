@@ -6,7 +6,6 @@ class Logic:
         with open(dictionary_path, 'r', encoding='utf-8') as dictionary:
             self.dictionary = dictionary.read().split('\n')
         self.word = random.choice(self.dictionary).lower()
-        print(self.word)
 
     def check_input_word(self, input_word: str) -> list | bool:  # Функция, возвращающая информацию о слове
         """:return                      | False если слова нет в словаре

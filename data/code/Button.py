@@ -23,7 +23,7 @@ class Button(pygame.sprite.Sprite):
         self.type = type
         self.text = text
         self.offset = offset
-        self.text_font = 'data/myy.ttf'
+        self.text_font = 'data/myy-font.ttf'
         self.image_path = 'data/textures/button-ui.png'
 
         # 1: играть, 2: ларек, 3: выход, 4: кнопка-в-ларьке, 5: мал-кнопка-в-ларьке, 6: назад (ларек), 7: выйти (игра)

@@ -12,7 +12,7 @@ class Game:
         self.active = active
         self.attempts = attempts
         self.len_word = len_word
-        self.text_font = 'data/myy.ttf'
+        self.text_font = 'data/myy-font.ttf'
         self.font = pygame.font.Font(self.text_font, 50)
         self.endscreen_font = pygame.font.Font(self.text_font, 40)
         self.clock = pygame.time.Clock()
@@ -41,14 +41,14 @@ class Game:
 
         # Интерфейс
         self.all_sprites = pygame.sprite.Group()  # для анимированного фона
-        self.wallpaper = AnimatedSprite(load_image('data/textures/wallpapers/animated-wallpaper3.png'), 60, 1, 0, 0,
+        self.wallpaper = AnimatedSprite(load_image('data/textures/wallpapers/gray/animated-wallpaper3.png'), 60, 1, 0, 0,
                                         self.all_sprites)
         self.line = pygame.image.load('data/textures/ui.png').subsurface((0, 156, 601, 93))
         self.coin = load_image('data/textures/ui.png').subsurface((628, 0, 18, 21))
         self.exit_button = Button(8, 6, 134, 39, 'выйти', 0, type=7)
 
-        self.win_display = load_image('data/textures/wallpapers/win-screen.png')
-        self.lose_display = load_image('data/textures/wallpapers/gameover-screen.png')
+        self.win_display = load_image('data/textures/screens/win-screen.png')
+        self.lose_display = load_image('data/textures/screens/gameover-screen.png')
 
         # Настройка расположения клеток для разных длин слов (стандарт - 5 букв)
         x_0 = 50  # Нач. позиция х
@@ -131,7 +131,7 @@ class Game:
             self.screen.blit(*i.get_rect_coord())
 
         if self.display_sure:  # Окно подтверждения выхода
-            self.screen.blit(load_image('data/textures/do-you-sure.png'), (0, 0))
+            self.screen.blit(load_image('data/textures/screens/do-you-sure.png'), (0, 0))
 
         # Условия для отображения окна выигрыша/проигрыша
         if self.noww == 0:
@@ -215,18 +215,18 @@ class Game:
                             self.input_word += event.unicode
                             pygame.mixer.Sound('data/sounds/game/press.wav').play()
 
-                if len(self.input_word) > self.len_word:
-                    self.input_word = self.input_word[0:self.len_word]
+                    if len(self.input_word) > self.len_word:
+                        self.input_word = self.input_word[0:self.len_word]
 
-                for i, c in self.guessing[self.attempt_numbering].items():
-                    if c.letter == '':
-                        if self.right_letters[i]:
-                            c.set_letter(self.right_letters[i], 1)
-                        else:
-                            c.set_letter('', -2)
-                self.input_word = self.input_word.lower()
-                for i, letter in enumerate(self.input_word):
-                    self.guessing[self.attempt_numbering][i].set_letter(letter, -2)
+                    for i, c in self.guessing[min(self.attempt_numbering, self.attempts - 1)].items():
+                        if c.letter == '':
+                            if self.right_letters[i]:
+                                c.set_letter(self.right_letters[i], 1)
+                            else:
+                                c.set_letter('', -2)
+                    self.input_word = self.input_word.lower()
+                    for i, letter in enumerate(self.input_word):
+                        self.guessing[self.attempt_numbering][i].set_letter(letter, -2)
 
     def accept_exiting(self, event):  # Функция для подтверждения/отмены выхода
         if self.display_sure and (

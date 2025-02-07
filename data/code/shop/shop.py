@@ -7,7 +7,7 @@ class Shop:
     def __init__(self, screen, money, mistake_goods, letter_goods, active=False):
         self.active = active
         self.screen = screen
-        self.text_font = 'data/myy.ttf'
+        self.text_font = 'data/myy-font.ttf'
         self.font = pygame.font.Font(self.text_font, 30)
         self.clock = pygame.time.Clock()
 
@@ -24,7 +24,7 @@ class Shop:
 
         # Интерфейс (основное)
         self.all_sprites = pygame.sprite.Group()  # для анимированного фона
-        self.wallpaper = AnimatedSprite(load_image('data/textures/wallpapers/animated-wallpaper2.png'), 60, 1, 0, 0,
+        self.wallpaper = AnimatedSprite(load_image('data/textures/wallpapers/gray/animated-wallpaper2.png'), 60, 1, 0, 0,
                                         self.all_sprites)
         self.sublayer = pygame.image.load('data/textures/ui.png').subsurface((697, 0, 600, 800))
         self.separator = pygame.image.load('data/textures/ui.png').subsurface((0, 115, 600, 40))
@@ -32,7 +32,7 @@ class Shop:
         self.customization_text = pygame.image.load('data/textures/ui.png').subsurface((299, 58, 335, 56))
 
         self.coin = pygame.image.load('data/textures/ui.png').subsurface((594, 0, 33, 30))
-        self.prices = pygame.image.load('data/textures/prices.png')
+        self.prices = pygame.image.load('data/textures/screens/prices.png')
 
         # Интерфейс (кнопки)
         self.exit_button = Button(46, 657, 509, 75, 'назад', 0, type=6)
@@ -76,9 +76,9 @@ class Shop:
 
         # Отображение игры-капчи
         if self.playing:
-            self.screen.blit(load_image('data/textures/captcha-screen.png'), (0, 0))
+            self.screen.blit(load_image('data/textures/screens/captcha-screen.png'), (0, 0))
             self.screen.blit(self.captcha_image, (358, 208))
-            font = pygame.font.Font('data/myy.ttf', 20)
+            font = pygame.font.Font('data/myy-font.ttf', 20)
             self.screen.blit((font.render(self.writing, True, (255, 255, 255))), (364, 326))
 
         self.clock.tick(self.fps)
