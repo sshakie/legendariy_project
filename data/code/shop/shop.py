@@ -7,10 +7,13 @@ class Shop:
     def __init__(self, screen, money, mistake_goods, letter_goods, active=False):
         self.active = active
         self.screen = screen
-        self.text_font = 'data/myy.ttf'
+        self.text_font = 'data/myy-font.ttf'
         self.font = pygame.font.Font(self.text_font, 30)
         self.clock = pygame.time.Clock()
 
+        self.wallpaper_bought = False
+        self.details_bought = False
+        self.buttons_bought = False
         self.money = money
         self.mistake_goods = mistake_goods
         self.letter_goods = letter_goods
@@ -24,7 +27,8 @@ class Shop:
 
         # Интерфейс (основное)
         self.all_sprites = pygame.sprite.Group()  # для анимированного фона
-        self.wallpaper = AnimatedSprite(load_image('data/textures/wallpapers/animated-wallpaper2.png'), 60, 1, 0, 0,
+        self.wallpaper = AnimatedSprite(load_image('data/textures/wallpapers/gray/animated-wallpaper2.png'), 60, 1, 0,
+                                        0,
                                         self.all_sprites)
         self.sublayer = pygame.image.load('data/textures/ui.png').subsurface((697, 0, 600, 800))
         self.separator = pygame.image.load('data/textures/ui.png').subsurface((0, 115, 600, 40))
@@ -32,7 +36,7 @@ class Shop:
         self.customization_text = pygame.image.load('data/textures/ui.png').subsurface((299, 58, 335, 56))
 
         self.coin = pygame.image.load('data/textures/ui.png').subsurface((594, 0, 33, 30))
-        self.prices = pygame.image.load('data/textures/prices.png')
+        self.prices = pygame.image.load('data/textures/screens/prices.png')
 
         # Интерфейс (кнопки)
         self.exit_button = Button(46, 657, 509, 75, 'назад', 0, type=6)
@@ -46,42 +50,46 @@ class Shop:
         self.background_custom = Button(472, 512, 86, 59, 'фон', 30, type=5, offset=(0, -10))
 
     def render(self):  # Функция для отображения интерфейса
-        money_label = self.font.render(str(self.money), True, (100, 0, 0))
-        mistake_label = self.font.render(str(self.mistake_goods), True, (100, 0, 0))
-        letter_label = self.font.render(str(self.letter_goods), True, (100, 0, 0))
+        if self.active:
+            money_label = self.font.render(str(self.money), True, (100, 0, 0))
+            mistake_label = self.font.render(str(self.mistake_goods), True, (100, 0, 0))
+            letter_label = self.font.render(str(self.letter_goods), True, (100, 0, 0))
 
-        self.all_sprites.draw(self.screen)  # анимированный фон
-        self.all_sprites.update()
-        self.screen.blit(self.sublayer, (0, 0))
+            self.all_sprites.draw(self.screen)  # анимированный фон
+            self.all_sprites.update()
+            self.screen.blit(self.sublayer, (0, 0))
 
-        self.screen.blit(self.upgrade_text, (143, 119))
-        self.screen.blit(self.separator, (0, 160))
-        self.screen.blit(self.customization_text, (125, 360))
-        self.screen.blit(self.separator, (0, 390))
+            self.screen.blit(self.upgrade_text, (143, 119))
+            self.screen.blit(self.separator, (0, 160))
+            self.screen.blit(self.customization_text, (125, 360))
+            self.screen.blit(self.separator, (0, 390))
 
-        self.screen.blit(*self.exit_button.get_rect_coord())
-        self.screen.blit(*self.mistake_upgrade.get_rect_coord())
-        self.screen.blit(*self.letter_upgrade.get_rect_coord())
-        self.screen.blit(*self.game_upgrade.get_rect_coord())
-        self.screen.blit(*self.button_custom.get_rect_coord())
-        self.screen.blit(*self.detail_custom.get_rect_coord())
-        self.screen.blit(*self.letter_custom.get_rect_coord())
-        self.screen.blit(*self.background_custom.get_rect_coord())
+            self.screen.blit(*self.exit_button.get_rect_coord())
+            self.screen.blit(*self.mistake_upgrade.get_rect_coord())
+            self.screen.blit(*self.letter_upgrade.get_rect_coord())
+            self.screen.blit(*self.game_upgrade.get_rect_coord())
+            self.screen.blit(*self.button_custom.get_rect_coord())
+            self.screen.blit(*self.detail_custom.get_rect_coord())
+            self.screen.blit(*self.letter_custom.get_rect_coord())
+            self.screen.blit(*self.background_custom.get_rect_coord())
+            if self.buttons_bought:
+                buttons_custom = load_image('data/textures/wallpapers/colored-elements/shop-buttons.png')
+                self.screen.blit(buttons_custom, (0, 0))
 
-        self.screen.blit(self.coin, (551, 17))
-        self.screen.blit(self.prices, (0, 0))
-        self.screen.blit(money_label, (545 - money_label.get_width(), 24))
-        self.screen.blit(mistake_label, (44, 245))
-        self.screen.blit(letter_label, (204, 245))
+            self.screen.blit(self.coin, (551, 17))
+            self.screen.blit(self.prices, (0, 0))
+            self.screen.blit(money_label, (545 - money_label.get_width(), 24))
+            self.screen.blit(mistake_label, (44, 245))
+            self.screen.blit(letter_label, (204, 245))
 
-        # Отображение игры-капчи
-        if self.playing:
-            self.screen.blit(load_image('data/textures/captcha-screen.png'), (0, 0))
-            self.screen.blit(self.captcha_image, (358, 208))
-            font = pygame.font.Font('data/myy.ttf', 20)
-            self.screen.blit((font.render(self.writing, True, (255, 255, 255))), (364, 326))
+            # Отображение игры-капчи
+            if self.playing:
+                self.screen.blit(load_image('data/textures/screens/captcha-screen.png'), (0, 0))
+                self.screen.blit(self.captcha_image, (358, 208))
+                font = pygame.font.Font('data/myy-font.ttf', 20)
+                self.screen.blit((font.render(self.writing, True, (255, 255, 255))), (364, 326))
 
-        self.clock.tick(self.fps)
+            self.clock.tick(self.fps)
 
     def on_click(self, event):  # Функция нажатия кнопки
         if self.active:
@@ -118,3 +126,11 @@ class Shop:
                 self.writing += event.unicode
                 pygame.mixer.Sound('data/sounds/game/press.wav').play()
             return None
+
+    def bought_element(self):
+        if self.wallpaper_bought:
+            AnimatedSprite(load_image('data/textures/wallpapers/colored-elements/animated-wallpaper2-wallpaper.png'),
+                           60, 1, 0, 0, self.all_sprites)
+        if self.details_bought:
+            AnimatedSprite(load_image('data/textures/wallpapers/colored-elements/animated-wallpaper2-details.png'), 60,
+                           1, 0, 0, self.all_sprites)
