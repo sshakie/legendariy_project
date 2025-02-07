@@ -1,10 +1,10 @@
-money 337
-button 0
-details 0
-letter 0
-wallpaper 0
-can_wallpaper 0
+money 275
+button 1
+details 1
+letter 1
+wallpaper 1
+can_wallpaper 1
 mistake 0
 letter 0
-win 4
+win 0
 captcha 0

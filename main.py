@@ -44,7 +44,8 @@ captcha = {'в цепи': (0, 0, 148, 64), 'высшую': (149, 0, 252, 113), '
            'распада ядер': (1093, 0, 98, 56), 'система': (1192, 0, 148, 37), 'мерно': (1341, 0, 79, 48),
            'номера': (1421, 0, 151, 58), 'разгадай': (1573, 0, 245, 94), 'миролюбивый': (1396, 95, 199, 98),
            'аэропорт': (1596, 95, 204, 99), 'моленье': (1255, 95, 140, 56), 'время приключений': (1255, 152, 140, 42),
-           'кот': (1095, 79, 159, 115), 'медуза': (1044, 133, 50, 61), 'собака': (924, 105, 119, 89), 'ноты': (828, 126, 95, 68),
+           'кот': (1095, 79, 159, 115), 'медуза': (1044, 133, 50, 61), 'собака': (924, 105, 119, 89),
+           'ноты': (828, 126, 95, 68),
            'обруч': (791, 126, 36, 38), 'небо': (713, 126, 77, 47)}
 
 
@@ -61,6 +62,7 @@ def main():
     menu_window = Menu(screen, money, active=True)
     shop_window = Shop(screen, money, mistake_goods, letter_goods)
     update_shop_buttons()
+    update_coloring()
     old_mistake_goods = mistake_goods
     old_letter_goods = letter_goods
 
@@ -98,7 +100,8 @@ def main():
                         time_for_game = 60
 
                     game_window = Game(screen, attempts=attempts_for_game, timer=time_for_game,
-                                       mistake_goods=mistake_goods, letter_goods=letter_goods, active=True)
+                                       mistake_goods=mistake_goods, letter_goods=letter_goods,
+                                       wallpaper_bought=wallpaper_custom, active=True)
                     menu_window.active = False
 
                     if mistake_goods > 0:
@@ -177,6 +180,7 @@ def main():
                     pygame.mixer.music.play(loops=-1)
 
                 update_shop_buttons()
+                update_coloring()
 
             if isinstance(game_window, Game):
                 if game_window.on_click(event):  # Если нажата кнопка в игре
@@ -213,8 +217,9 @@ def main():
                             attempts_for_game = 2
                             time_for_game = 60
 
-                        game_window = Game(screen, mistake_goods=mistake_goods, letter_goods=letter_goods, attempts=attempts_for_game,
-                                           timer=time_for_game, active=True)
+                        game_window = Game(screen, mistake_goods=mistake_goods, letter_goods=letter_goods,
+                                           attempts=attempts_for_game,
+                                           timer=time_for_game, wallpaper_bought=wallpaper_custom, active=True)
                         sfx_click.play()
                         pygame.mixer.music.load('data/sounds/game/ost (by zer).wav')
                         pygame.mixer.music.play(loops=-1)
@@ -358,6 +363,19 @@ def transition():  # Функция переходов между сценами
                              f'win {wins}\n'
                              f'captcha {captches}')
             running = False
+
+
+def update_coloring():
+    global menu_window, game_window, shop_window
+    menu_window.wallpaper_bought = wallpaper_custom
+    shop_window.wallpaper_bought = wallpaper_custom
+    menu_window.details_bought = details_custom
+    shop_window.details_bought = details_custom
+    menu_window.buttons_bought = button_custom
+    shop_window.buttons_bought = button_custom
+
+    menu_window.bought_element()
+    shop_window.bought_element()
 
 
 if __name__ == '__main__':
