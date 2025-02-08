@@ -1,25 +1,37 @@
-import random
-
-import pygame.time
-from pygame import MOUSEBUTTONDOWN
+import pygame, random
 from data.code.Button import *
 from data.code.game.game import Game
 from data.code.menu.menu import Menu
 from data.code.shop.shop import Shop
 
-# Подгрузка компонентов из конфига
-with open('data/config.txt') as config:
-    config = config.read()
-    money = int(config.split('\n')[0].split()[-1])
-    button_custom = bool(int(config.split('\n')[1].split()[-1]))
-    details_custom = bool(int(config.split('\n')[2].split()[-1]))
-    letter_custom = bool(int(config.split('\n')[3].split()[-1]))
-    wallpaper_can_buy = bool(int(config.split('\n')[4].split()[-1]))
-    wallpaper_custom = bool(int(config.split('\n')[5].split()[-1]))
-    mistake_goods = int(config.split('\n')[6].split()[-1])
-    letter_goods = int(config.split('\n')[7].split()[-1])
-    wins = int(config.split('\n')[8].split()[-1])
-    captches = int(config.split('\n')[9].split()[-1])
+# Подгрузка компонентов из конфига / Создание конфига
+try:
+    with open('data/config.txt') as config:
+        config = config.read()
+        money = int(config.split('\n')[0].split()[-1])
+        button_custom = bool(int(config.split('\n')[1].split()[-1]))
+        details_custom = bool(int(config.split('\n')[2].split()[-1]))
+        letter_custom = bool(int(config.split('\n')[3].split()[-1]))
+        wallpaper_can_buy = bool(int(config.split('\n')[4].split()[-1]))
+        wallpaper_custom = bool(int(config.split('\n')[5].split()[-1]))
+        mistake_goods = int(config.split('\n')[6].split()[-1])
+        letter_goods = int(config.split('\n')[7].split()[-1])
+        wins = int(config.split('\n')[8].split()[-1])
+        captches = int(config.split('\n')[9].split()[-1])
+except FileNotFoundError:
+    with open('data/config.txt', 'w+') as config:
+        money, button_custom, details_custom, letter_custom, wallpaper_can_buy = 0, 0, 0, 0, 0
+        wallpaper_custom, mistake_goods, letter_goods, wins, captches = 0, 0, 0, 0, 0
+        config.write(f'money {money}\n'
+                     f'button {int(button_custom)}\n'
+                     f'details {int(details_custom)}\n'
+                     f'letter {int(letter_custom)}\n'
+                     f'wallpaper {int(wallpaper_custom)}\n'
+                     f'can_wallpaper {int(wallpaper_can_buy)}\n'
+                     f'mistake {mistake_goods}\n'
+                     f'letter {letter_goods}\n'
+                     f'win {wins}\n'
+                     f'captcha {captches}')
 
 # Для перехода между сценами
 old_scene, new_scene = None, None
@@ -67,10 +79,11 @@ def main():
     old_letter_goods = letter_goods
 
     # Звуки
-    pygame.mixer.Sound('data/sounds/menu/start.wav').play()
-    timer_event = pygame.USEREVENT + 1
-    timer_event2 = pygame.USEREVENT + 2
+    timer_event, timer_event2 = pygame.USEREVENT + 1, pygame.USEREVENT + 2  # Создал, чтобы не накладывались ост на звуки
     pygame.time.set_timer(timer_event, 2000, loops=1)
+    timer_event_actived = True
+
+    pygame.mixer.Sound('data/sounds/menu/start.wav').play()
     sfx_click = pygame.mixer.Sound('data/sounds/click.wav')
 
     clock = pygame.time.Clock()
@@ -78,15 +91,32 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 exiting = True
-            if event.type == timer_event and menu_window.active:
-                pygame.mixer.music.load('data/sounds/menu/ost.wav')
-                pygame.mixer.music.play(loops=-1)
-            elif event.type == timer_event2 and game_window.active:
+            if event.type == timer_event: # Сделал, чтобы не накладывались ост на звуки
+                if menu_window.active:
+                    pygame.mixer.music.load('data/sounds/menu/ost.wav')
+                    pygame.mixer.music.play(loops=-1)
+                elif shop_window.active:
+                    pygame.mixer.music.load('data/sounds/shop/ost.wav')
+                    pygame.time.delay(500)
+                    pygame.mixer.music.play(loops=-1, fade_ms=500)
+                timer_event_actived = False
+            if event.type == timer_event2 and game_window.active: # Сделал, чтобы успел fadeout menu_ost
                 pygame.mixer.music.load('data/sounds/game/ost (by zer).wav')
                 pygame.mixer.music.play(loops=-1)
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE: # Кейбинды выхода
+                if shop_window.active:
+                    old_scene, new_scene = shop_window, menu_window
+                    start_transition = True
+                    sfx_click.play()
+                    pygame.mixer.music.load('data/sounds/menu/ost.wav')
+                    pygame.mixer.music.play(loops=-1)
+                elif isinstance(game_window, Game):
+                    game_window.display_sure = True
+                    sfx_click.play()
+
             if menu_window.on_click(event):  # Если нажата кнопка в меню
                 butt_text = menu_window.on_click(event).get_text()
-                if butt_text == 'играть':
+                if butt_text == 'играть' and not exiting:
                     # Настройка усложнения игры:
                     # до 2 побед = 5 поп., 180 сек | от 2 до 4 побед = 4 поп., 120 сек | от 4 до 6 побед = 3 поп. 90 сек | больше = 2 поп. 60 сек
                     if 2 <= wins <= 3:
@@ -127,13 +157,14 @@ def main():
                     sfx_click.play()
                     pygame.mixer.music.fadeout(1000)
                     pygame.time.set_timer(timer_event2, 1001, loops=1)
-                elif butt_text == 'ларек':
+                elif butt_text == 'ларек' and not exiting:
                     old_scene, new_scene = menu_window, shop_window
                     start_transition = True
 
                     sfx_click.play()
-                    pygame.mixer.music.load('data/sounds/shop/ost.wav')
-                    pygame.mixer.music.play(loops=-1)
+                    if not timer_event_actived:
+                        pygame.mixer.music.load('data/sounds/shop/ost.wav')
+                        pygame.mixer.music.play(loops=-1)
                 elif butt_text == 'выход':
                     exiting = True
             elif shop_window.on_click(event):  # Если нажата кнопка в ларьке
@@ -154,7 +185,6 @@ def main():
                         shop_window.captcha_word = pair[0]
                         shop_window.writing = ''
                         shop_window.playing = True
-                        print(pair[0])
                 elif butt_text == 'кнопки' and shop_window.playing is False:
                     if button_custom is False:
                         if buy(75):
@@ -172,12 +202,14 @@ def main():
                         if buy(250):
                             wallpaper_custom = True
 
-                elif butt_text == 'назад' and shop_window.playing is False:
+                elif butt_text == 'назад' and not shop_window.playing and not start_transition and not stop_transition:
                     old_scene, new_scene = shop_window, menu_window
                     start_transition = True
+
                     sfx_click.play()
-                    pygame.mixer.music.load('data/sounds/menu/ost.wav')
-                    pygame.mixer.music.play(loops=-1)
+                    if not timer_event_actived:
+                        pygame.mixer.music.load('data/sounds/menu/ost.wav')
+                        pygame.mixer.music.play(loops=-1, fade_ms=1000)
 
                 update_shop_buttons()
                 update_coloring()
@@ -224,7 +256,7 @@ def main():
                         pygame.mixer.music.load('data/sounds/game/ost (by zer).wav')
                         pygame.mixer.music.play(loops=-1)
 
-            if event.type == MOUSEBUTTONDOWN and isinstance(game_window, Game):
+            if event.type == pygame.MOUSEBUTTONDOWN and isinstance(game_window, Game):
                 accepting = game_window.accept_exiting(event)
                 if accepting == 'yes':
                     game_window = ''
@@ -349,6 +381,7 @@ def transition():  # Функция переходов между сценами
     if exiting:  # Анимация выхода из игры
         if transition_alpha == 0:
             pygame.mixer.Sound('data/sounds/menu/end.wav').play()
+            pygame.mixer.music.fadeout(1000)
         transition_alpha += 5
         if transition_alpha == 250:  # закрытие игры
             with open('data/config.txt', 'w') as config:
