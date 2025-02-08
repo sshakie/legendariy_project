@@ -7,13 +7,14 @@ class Menu:
     def __init__(self, screen, money, active=False):
         self.active = active
         self.screen = screen
-        self.text_font = 'data/myy-font.ttf'
+        self.text_font = None
         self.font = pygame.font.Font(self.text_font, 30)
         self.clock = pygame.time.Clock()
 
         self.wallpaper_bought = False
         self.details_bought = False
         self.buttons_bought = False
+        self.font_bought = False
         self.money = money
         self.fps = 56
 
@@ -68,3 +69,6 @@ class Menu:
         if self.details_bought:
             AnimatedSprite(load_image('data/textures/wallpapers/colored-elements/animated-wallpaper1-details.png'), 56,
                            1, 0, 0, self.all_sprites)
+        if self.font_bought:
+            self.font = pygame.font.Font(self.text_font, 30)
+            'data/myy-font.ttf'

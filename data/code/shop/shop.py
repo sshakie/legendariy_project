@@ -7,13 +7,14 @@ class Shop:
     def __init__(self, screen, money, mistake_goods, letter_goods, active=False):
         self.active = active
         self.screen = screen
-        self.text_font = 'data/myy-font.ttf'
+        self.text_font = None
         self.font = pygame.font.Font(self.text_font, 30)
         self.clock = pygame.time.Clock()
 
         self.wallpaper_bought = False
         self.details_bought = False
         self.buttons_bought = False
+        self.font_bought = False
         self.money = money
         self.mistake_goods = mistake_goods
         self.letter_goods = letter_goods
@@ -44,9 +45,9 @@ class Shop:
         self.mistake_upgrade = Button(29, 197, 134, 75, ['право на ', 'ошибку'], 22, type=4)
         self.letter_upgrade = Button(189, 196, 134, 75, ['раскрыть ', 'букву'], 22, type=4)
         self.game_upgrade = Button(29, 277, 134, 75, ['игра-', 'капча'], 26, type=4, offset=(-10, 0))
-        self.button_custom = Button(111, 427, 134, 75, 'кнопки', 30, type=4)
-        self.detail_custom = Button(271, 427, 134, 75, 'детали', 27, type=4)
-        self.letter_custom = Button(431, 427, 134, 75, 'буквы', 30, type=4)
+        self.font_custom = Button(111, 427, 134, 75, 'шрифт', 30, type=4)
+        self.button_custom = Button(271, 427, 134, 75, 'кнопки', 30, type=4)
+        self.detail_custom = Button(431, 427, 134, 75, 'детали', 27, type=4)
         self.background_custom = Button(472, 512, 86, 59, 'фон', 30, type=5, offset=(0, -10))
 
     def render(self):  # Функция для отображения интерфейса
@@ -70,7 +71,7 @@ class Shop:
             self.screen.blit(*self.game_upgrade.get_rect_coord())
             self.screen.blit(*self.button_custom.get_rect_coord())
             self.screen.blit(*self.detail_custom.get_rect_coord())
-            self.screen.blit(*self.letter_custom.get_rect_coord())
+            self.screen.blit(*self.font_custom.get_rect_coord())
             self.screen.blit(*self.background_custom.get_rect_coord())
             if self.buttons_bought:
                 buttons_custom = load_image('data/textures/wallpapers/colored-elements/shop-buttons.png')
@@ -94,7 +95,7 @@ class Shop:
     def on_click(self, event):  # Функция нажатия кнопки
         if self.active:
             for button in [self.mistake_upgrade, self.letter_upgrade, self.game_upgrade, self.button_custom,
-                           self.detail_custom, self.letter_custom, self.background_custom, self.exit_button]:
+                           self.detail_custom, self.font_custom, self.background_custom, self.exit_button]:
                 if button.is_clicked(event):
                     return button
         return False
@@ -102,7 +103,7 @@ class Shop:
     def selecting_button(self):  # Функция для выделения кнопки
         if self.active:
             for button in [self.mistake_upgrade, self.letter_upgrade, self.game_upgrade,
-                           self.button_custom, self.detail_custom, self.letter_custom,
+                           self.button_custom, self.detail_custom, self.font_custom,
                            self.background_custom, self.exit_button]:
                 if button.selecting():
                     if button == self.exit_button:
@@ -134,3 +135,13 @@ class Shop:
         if self.details_bought:
             AnimatedSprite(load_image('data/textures/wallpapers/colored-elements/animated-wallpaper2-details.png'), 60,
                            1, 0, 0, self.all_sprites)
+        if self.font_bought:
+            self.font = pygame.font.Font(self.text_font, 30)
+            self.mistake_upgrade = Button(29, 197, 134, 75, ['право на ', 'ошибку'], 22, type=4, font=self.text_font)
+            self.letter_upgrade = Button(189, 196, 134, 75, ['раскрыть ', 'букву'], 22, type=4, font=self.text_font)
+            self.game_upgrade = Button(29, 277, 134, 75, ['игра-', 'капча'], 26, type=4, offset=(-10, 0),
+                                       font=self.text_font)
+            self.button_custom = Button(111, 427, 134, 75, 'шрифт', 30, type=4, font=self.text_font)
+            self.detail_custom = Button(271, 427, 134, 75, 'кнопки', 30, type=4, font=self.text_font)
+            self.font_custom = Button(431, 427, 134, 75, 'детали', 27, type=4, font=self.text_font)
+            self.background_custom = Button(472, 512, 86, 59, 'фон', 30, type=5, offset=(0, -10), font=self.text_font)

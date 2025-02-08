@@ -14,7 +14,7 @@ def load_image(fullname, color_key=None):  # Функция для загруз�
 
 
 class Button(pygame.sprite.Sprite):
-    def __init__(self, x, y, width, height, text, font_size, type=0, crop: tuple[int, int, int, int] = None,
+    def __init__(self, x, y, width, height, text, font_size, font=None, type=0, crop: tuple[int, int, int, int] = None,
                  selected_crop=None, offset=(0, 0)):
         super().__init__()
         self.width = width
@@ -23,7 +23,8 @@ class Button(pygame.sprite.Sprite):
         self.type = type
         self.text = text
         self.offset = offset
-        self.text_font = 'data/myy-font.ttf'
+        self.text_font = font
+        self.font_size = font_size
         self.image_path = 'data/textures/button-ui.png'
 
         # 1: играть, 2: ларек, 3: выход, 4: кнопка-в-ларьке, 5: мал-кнопка-в-ларьке, 6: назад (ларек), 7: выйти (игра)
@@ -56,7 +57,7 @@ class Button(pygame.sprite.Sprite):
         self.screen.blit(self.image, (0, 0))
 
         # Текст на кнопке
-        self.font = pygame.font.Font(self.text_font, font_size)
+        self.font = pygame.font.Font(self.text_font, self.font_size)
         if isinstance(self.text, list):  # "Переносит строчку" при помощи листа
             self.text_label = [self.font.render(i, True, (0, 0, 0)) for i in self.text]
             self.text_x = (width // 2 - self.text_label[0].get_width() // 2) + self.offset[0]
