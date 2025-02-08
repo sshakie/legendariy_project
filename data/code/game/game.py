@@ -1,5 +1,4 @@
 import pygame, random
-
 from data.code.Button import Button, load_image
 from data.code.animating import AnimatedSprite
 from data.code.game.cell import Cell
@@ -7,16 +6,19 @@ from data.code.game.logic import Logic
 
 
 class Game:
-    def __init__(self, screen, attempts=5, len_word=5, timer=180, mistake_goods=0, letter_goods=0,
-                 wallpaper_bought=False, active=False):
+    def __init__(self, screen, timer, attempts, len_word=5, mistake_goods=0, letter_goods=0,
+                 wallpaper_bought=False, font_bought=False, active=False):
         self.screen = screen
         self.active = active
         self.attempts = attempts
         self.len_word = len_word
-        self.text_font = 'data/myy-font.ttf'
+        self.text_font = None
+        if font_bought:
+            self.text_font = 'data/myy-font.ttf'
         self.font = pygame.font.Font(self.text_font, 50)
         self.endscreen_font = pygame.font.Font(self.text_font, 40)
         self.clock = pygame.time.Clock()
+        self.time_started_game = pygame.time.get_ticks()
 
         self.logic = Logic(f'data/dictionary/words-length-{self.len_word}.txt')
         self.right_letters = {i: '' for i in range(self.len_word)}
@@ -93,17 +95,17 @@ class Game:
         # Создание клавиатуры
         for i, let in enumerate('йцукенгшщзхъ'):
             x_0, y_0, l = 33, 645, 45
-            kb = Button(x_0 + l * i, y_0, 40, 40, let, 30, crop=(0, 709, 44, 44))
+            kb = Button(x_0 + l * i, y_0, 40, 40, let, 30, font=self.text_font, crop=(0, 709, 44, 44))
             self.keyboard.append(kb)
         for i, let in enumerate('фывапролджэ<'):
             x_0, y_0, l = 33, 695, 45
-            kb = Button(x_0 + l * i, y_0, 40, 40, let, 30, crop=(0, 709, 44, 44))
+            kb = Button(x_0 + l * i, y_0, 40, 40, let, 30, font=self.text_font, crop=(0, 709, 44, 44))
             self.keyboard.append(kb)
         for i, let in enumerate('ячсмитьбю'):
             x_0, y_0, l = 100, 745, 45
-            kb = Button(x_0 + l * i, y_0, 40, 40, let, 30, crop=(0, 709, 44, 44))
+            kb = Button(x_0 + l * i, y_0, 40, 40, let, 30, font=self.text_font, crop=(0, 709, 44, 44))
             self.keyboard.append(kb)
-        self.enter = Button(505, 745, 85, 40, 'enter', 0, crop=(308, 709, 85, 43))
+        self.enter = Button(505, 745, 85, 40, 'enter', 0, font=self.text_font, crop=(308, 709, 85, 43))
         self.keyboard.append(self.enter)
 
         if int(self.letter_goods):  # Если куплено открытие расположение рандомной клетки, то открываем
@@ -116,15 +118,16 @@ class Game:
         if self.active:
             self.all_sprites.draw(self.screen)  # для анимированного фона
             self.all_sprites.update()
-            self.screen.blit(self.font.render(f'Попыток: {self.attempts - self.attempt_numbering}', True, (0, 0, 0)),
-                             (289, 52))
+            attempts_label = self.font.render(f'Попыток: {self.attempts - self.attempt_numbering}', True, (0, 0, 0))
+            self.screen.blit(attempts_label,
+                             (590 - attempts_label.get_width(), 52))
             self.screen.blit(self.line, (0, 543))
             self.screen.blit(*self.exit_button.get_rect_coord())
 
             # Таймер
             if self.win_lose_flg is None:
-                self.noww = max(0, self.timer - (pygame.time.get_ticks() // 1000))
-            self.screen.blit((self.font.render(str(self.noww), True, (0, 0, 0))), (10, 51))
+                self.noww = max(0, self.timer - ((pygame.time.get_ticks() - self.time_started_game) // 1000))
+            self.screen.blit((self.font.render(str(self.noww), True, (0, 0, 0))), (10, 52))
 
             # Клетки
             for i in range(len(self.guessing)):
@@ -158,7 +161,8 @@ class Game:
             else:  # Выделение клеток красным, если слово некорректно
                 red_surface = pygame.Surface(self.screen.get_size(), pygame.SRCALPHA)
                 red_surface.fill((0, 0, 0, 0))
-                pygame.draw.rect(red_surface, (self.transparency_red_rect, self.transparency_green_rect, 0), self.red_rect,
+                pygame.draw.rect(red_surface, (self.transparency_red_rect, self.transparency_green_rect, 0),
+                                 self.red_rect,
                                  border_radius=5, width=10)
                 self.screen.blit(red_surface, (0, 0))
                 self.transparency_red_rect = max(0, self.transparency_red_rect - 3)
@@ -181,7 +185,7 @@ class Game:
         return False
 
     def on_click(self, event):  # Функция нажатия кнопки
-        if self.active:
+        if self.active and not self.display_sure:
             if self.exit_button.is_clicked(event):
                 return self.exit_button
             if self.win_lose_flg is not None:
@@ -322,8 +326,8 @@ class Game:
     def check_win(self):  # Функция для проверки выигрыша
         if self.input_word == self.logic.word:
             self.win_lose_flg = True
-            self.reset_button = Button(154, 354, 309, 91, 'заново2', 0, type=10)
-            self.exit_button_2 = Button(154, 466, 308, 91, 'выйти3', 0, type=11)
+            self.reset_button = Button(154, 354, 309, 91, 'заново2', 0, font=self.text_font, type=10)
+            self.exit_button_2 = Button(154, 466, 308, 91, 'выйти3', 0, font=self.text_font, type=11)
             if self.ended is False:
                 pygame.mixer.Sound('data/sounds/game/win.wav').play()
             self.ended = True
@@ -332,15 +336,15 @@ class Game:
             with open('data/config.txt') as config:
                 config = config.read()
                 a = [bool(int(config.split('\n')[1].split()[-1])), bool(int(config.split('\n')[2].split()[-1])),
-                     bool(int(config.split('\n')[3].split()[-1])), bool(int(config.split('\n')[5].split()[-1]))]
-                self.k *= (1 + (0.2 * a.count(True)))
-            if self.attempt_numbering == 1:
+                     bool(int(config.split('\n')[3].split()[-1])), bool(int(config.split('\n')[4].split()[-1]))]
+                self.k *= (1 + (0.4 * a.count(True)))
+            if self.attempt_numbering <= 2:
                 self.k *= 1.4
-            self.prize = round(10 * self.k)
+            self.prize = round(15 * self.k)
         elif self.attempt_numbering == self.attempts:
             self.win_lose_flg = False
-            self.reset_button = Button(154, 354, 309, 91, 'заново', 0, type=8)
-            self.exit_button_2 = Button(154, 466, 308, 91, 'выйти2', 0, type=9)
+            self.reset_button = Button(154, 354, 309, 91, 'заново', 0, font=self.text_font, type=8)
+            self.exit_button_2 = Button(154, 466, 308, 91, 'выйти2', 0, font=self.text_font, type=9)
             if self.ended is False:
                 pygame.mixer.Sound('data/sounds/game/lose.wav').play()
             self.ended = True

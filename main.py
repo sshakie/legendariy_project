@@ -11,27 +11,26 @@ try:
         money = int(config.split('\n')[0].split()[-1])
         button_custom = bool(int(config.split('\n')[1].split()[-1]))
         details_custom = bool(int(config.split('\n')[2].split()[-1]))
-        letter_custom = bool(int(config.split('\n')[3].split()[-1]))
-        wallpaper_can_buy = bool(int(config.split('\n')[4].split()[-1]))
-        wallpaper_custom = bool(int(config.split('\n')[5].split()[-1]))
-        mistake_goods = int(config.split('\n')[6].split()[-1])
-        letter_goods = int(config.split('\n')[7].split()[-1])
-        wins = int(config.split('\n')[8].split()[-1])
-        captches = int(config.split('\n')[9].split()[-1])
+        font_custom = bool(int(config.split('\n')[3].split()[-1]))
+        wallpaper_custom = bool(int(config.split('\n')[4].split()[-1]))
+        mistake_goods = int(config.split('\n')[5].split()[-1])
+        letter_goods = int(config.split('\n')[6].split()[-1])
+        wins = int(config.split('\n')[7].split()[-1])
+        captches = int(config.split('\n')[8].split()[-1])
 except FileNotFoundError:
     with open('data/config.txt', 'w+') as config:
-        money, button_custom, details_custom, letter_custom, wallpaper_can_buy = 0, 0, 0, 0, 0
+        money, button_custom, details_custom, font_custom, wallpaper_can_buy = 0, 0, 0, 0, 0
         wallpaper_custom, mistake_goods, letter_goods, wins, captches = 0, 0, 0, 0, 0
         config.write(f'money {money}\n'
                      f'button {int(button_custom)}\n'
                      f'details {int(details_custom)}\n'
-                     f'letter {int(letter_custom)}\n'
+                     f'font {int(font_custom)}\n'
                      f'wallpaper {int(wallpaper_custom)}\n'
-                     f'can_wallpaper {int(wallpaper_can_buy)}\n'
                      f'mistake {mistake_goods}\n'
                      f'letter {letter_goods}\n'
                      f'win {wins}\n'
                      f'captcha {captches}')
+wallpaper_can_buy = False
 
 # Для перехода между сценами
 old_scene, new_scene = None, None
@@ -47,7 +46,6 @@ k = 4  # нужно в моменте
 
 # Остальное
 menu_window, shop_window, game_window = '', '', ''
-time_for_game, attempts_for_game = 180, 5
 pygame.init()
 running = True
 fps = 60
@@ -64,7 +62,7 @@ captcha = {'в цепи': (0, 0, 148, 64), 'высшую': (149, 0, 252, 113), '
 def main():
     global ws_width, old_scene, new_scene, start_transition, stop_transition, black_screen, glow_color
     global game_starting, transition_timer, transition_alpha, exiting, running, fps, k, money, glow_alpha
-    global button_custom, details_custom, letter_custom, wallpaper_can_buy, wallpaper_custom, mistake_goods, letter_goods
+    global button_custom, details_custom, font_custom, wallpaper_can_buy, wallpaper_custom, mistake_goods, letter_goods
     global menu_window, shop_window, game_window, wins, attempts_for_game, time_for_game, captches
 
     pygame.display.set_caption('Wordy')
@@ -91,7 +89,7 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 exiting = True
-            if event.type == timer_event: # Сделал, чтобы не накладывались ост на звуки
+            if event.type == timer_event:  # Сделал, чтобы не накладывались ост на звуки
                 if menu_window.active:
                     pygame.mixer.music.load('data/sounds/menu/ost.wav')
                     pygame.mixer.music.play(loops=-1)
@@ -100,38 +98,45 @@ def main():
                     pygame.time.delay(500)
                     pygame.mixer.music.play(loops=-1, fade_ms=500)
                 timer_event_actived = False
-            if event.type == timer_event2 and game_window.active: # Сделал, чтобы успел fadeout menu_ost
+            if event.type == timer_event2 and game_window.active:  # Сделал, чтобы успел fadeout menu_ost
                 pygame.mixer.music.load('data/sounds/game/ost (by zer).wav')
                 pygame.mixer.music.play(loops=-1)
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE: # Кейбинды выхода
-                if shop_window.active:
-                    old_scene, new_scene = shop_window, menu_window
-                    start_transition = True
-                    sfx_click.play()
-                    pygame.mixer.music.load('data/sounds/menu/ost.wav')
-                    pygame.mixer.music.play(loops=-1)
-                elif isinstance(game_window, Game):
-                    game_window.display_sure = True
-                    sfx_click.play()
+            if event.type == pygame.KEYDOWN:  # Кейбинды выхода
+                if shop_window.playing:
+                    if shop_window.key_pressing(event):
+                        money += 35
+                        captches += 1
+                elif event.key == pygame.K_ESCAPE:
+                    if shop_window.active:
+                        old_scene, new_scene = shop_window, menu_window
+                        start_transition = True
+                        sfx_click.play()
+                        pygame.mixer.music.load('data/sounds/menu/ost.wav')
+                        pygame.mixer.music.play(loops=-1)
+                    elif isinstance(game_window, Game):
+                        game_window.display_sure = True
+                        sfx_click.play()
 
             if menu_window.on_click(event):  # Если нажата кнопка в меню
                 butt_text = menu_window.on_click(event).get_text()
                 if butt_text == 'играть' and not exiting:
                     # Настройка усложнения игры:
-                    # до 2 побед = 5 поп., 180 сек | от 2 до 4 побед = 4 поп., 120 сек | от 4 до 6 побед = 3 поп. 90 сек | больше = 2 поп. 60 сек
-                    if 2 <= wins <= 3:
+                    # до 4 побед = 5 поп., 220 сек | от 5 до 8 побед = 4 поп., 185 сек | от 8 до 11 побед = 3 поп. 150 сек | больше = 3 поп. 110 сек
+                    time_for_game = 220
+                    attempts_for_game = 5
+                    if 5 <= wins <= 8:
                         attempts_for_game = 4
-                        time_for_game = 120
-                    elif 4 <= wins <= 5:
+                        time_for_game = 185
+                    elif 8 <= wins <= 11:
                         attempts_for_game = 3
-                        time_for_game = 90
-                    elif wins > 6:
-                        attempts_for_game = 2
-                        time_for_game = 60
+                        time_for_game = 150
+                    elif wins > 11:
+                        attempts_for_game = 3
+                        time_for_game = 110
 
-                    game_window = Game(screen, attempts=attempts_for_game, timer=time_for_game,
+                    game_window = Game(screen, time_for_game, attempts_for_game,
                                        mistake_goods=mistake_goods, letter_goods=letter_goods,
-                                       wallpaper_bought=wallpaper_custom, active=True)
+                                       wallpaper_bought=wallpaper_custom, font_bought=font_custom, active=True)
                     menu_window.active = False
 
                     if mistake_goods > 0:
@@ -146,9 +151,8 @@ def main():
                         config.write(f'money {money}\n'
                                      f'button {int(button_custom)}\n'
                                      f'details {int(details_custom)}\n'
-                                     f'letter {int(letter_custom)}\n'
+                                     f'font {int(font_custom)}\n'
                                      f'wallpaper {int(wallpaper_custom)}\n'
-                                     f'can_wallpaper {int(wallpaper_can_buy)}\n'
                                      f'mistake {mistake_goods}\n'
                                      f'letter {letter_goods}\n'
                                      f'win {wins}\n'
@@ -167,6 +171,7 @@ def main():
                         pygame.mixer.music.play(loops=-1)
                 elif butt_text == 'выход':
                     exiting = True
+
             elif shop_window.on_click(event):  # Если нажата кнопка в ларьке
                 butt_text = shop_window.on_click(event).get_text()
                 if butt_text == 'право на ошибку' and shop_window.playing is False:
@@ -193,10 +198,10 @@ def main():
                     if details_custom is False:
                         if buy(100):
                             details_custom = True
-                elif butt_text == 'буквы' and shop_window.playing is False:
-                    if letter_custom is False:
+                elif butt_text == 'шрифт' and shop_window.playing is False:
+                    if font_custom is False:
                         if buy(50):
-                            letter_custom = True
+                            font_custom = True
                 elif butt_text == 'фон' and shop_window.playing is False:
                     if wallpaper_can_buy and wallpaper_custom is False:
                         if buy(250):
@@ -235,23 +240,22 @@ def main():
                         pygame.mixer.music.play(loops=-1)
                     elif butt_text == 'заново' or butt_text == 'заново2':
                         # Настройка усложнения игры:
-                        # до 2 побед = 5 поп., 180 сек | от 2 до 4 побед = 4 поп., 120 сек | от 4 до 6 побед = 3 поп. 90 сек | больше = 2 поп. 60 сек
-                        if butt_text == 'заново2':
-                            wins += 1
-                            money += game_window.prize
-                        if 2 <= wins <= 3:
+                        # до 4 побед = 5 поп., 220 сек | от 5 до 8 побед = 4 поп., 185 сек | от 8 до 11 побед = 3 поп. 150 сек | больше = 3 поп. 110 сек
+                        time_for_game = 220
+                        attempts_for_game = 5
+                        if 5 <= wins <= 8:
                             attempts_for_game = 4
-                            time_for_game = 120
-                        elif 4 <= wins <= 5:
+                            time_for_game = 185
+                        elif 8 <= wins <= 11:
                             attempts_for_game = 3
-                            time_for_game = 90
-                        elif wins > 6:
-                            attempts_for_game = 2
-                            time_for_game = 60
+                            time_for_game = 150
+                        elif wins > 11:
+                            attempts_for_game = 3
+                            time_for_game = 110
 
-                        game_window = Game(screen, mistake_goods=mistake_goods, letter_goods=letter_goods,
-                                           attempts=attempts_for_game,
-                                           timer=time_for_game, wallpaper_bought=wallpaper_custom, active=True)
+                        game_window = Game(screen, time_for_game, attempts_for_game, mistake_goods=mistake_goods,
+                                           letter_goods=letter_goods, wallpaper_bought=wallpaper_custom,
+                                           font_bought=font_custom, active=True)
                         sfx_click.play()
                         pygame.mixer.music.load('data/sounds/game/ost (by zer).wav')
                         pygame.mixer.music.play(loops=-1)
@@ -277,14 +281,10 @@ def main():
                     game_window.display_sure = False
                     sfx_click.play()
 
-            if event.type == pygame.KEYDOWN and shop_window.playing:  # Для игры-капчи
-                if shop_window.key_pressing(event):
-                    money += 35
-                    captches += 1
-
         if isinstance(game_window, Game):
             if game_window.win_lose_flg is not None:
                 pygame.mixer.music.fadeout(250)
+
         # Обновление счетчиков
         menu_window.money = money
         shop_window.money = money
@@ -335,17 +335,17 @@ def buy(cost):  # Функция покупки товара
 
 
 def update_shop_buttons():  # Функция, обновляющая текстуры кнопки магазина для их закрытия/открытия
-    global button_custom, details_custom, letter_custom, wallpaper_can_buy, wallpaper_custom, mistake_goods, letter_goods
+    global button_custom, details_custom, font_custom, wallpaper_can_buy, wallpaper_custom, mistake_goods, letter_goods
     global menu_window, shop_window, game_window
     if button_custom:
         shop_window.button_custom.set_image((270, 261, 134, 75), 405)
     if details_custom:
         shop_window.detail_custom.set_image((270, 261, 134, 75), 405)
-    if letter_custom:
-        shop_window.letter_custom.set_image((270, 261, 134, 75), 405)
+    if font_custom:
+        shop_window.font_custom.set_image((270, 261, 134, 75), 405)
     if wallpaper_custom:
         shop_window.background_custom.set_image((174, 337, 86, 59), 261)
-    if button_custom and details_custom and letter_custom and wallpaper_can_buy is False:
+    if button_custom and details_custom and font_custom:
         shop_window.background_custom.set_image((0, 337, 86, 59), 87)
         wallpaper_can_buy = True
 
@@ -388,11 +388,10 @@ def transition():  # Функция переходов между сценами
                 config.write(f'money {money}\n'
                              f'button {int(button_custom)}\n'
                              f'details {int(details_custom)}\n'
-                             f'letter {int(letter_custom)}\n'
+                             f'font {int(font_custom)}\n'
                              f'wallpaper {int(wallpaper_custom)}\n'
-                             f'can_wallpaper {int(wallpaper_can_buy)}\n'
                              f'mistake {mistake_goods}\n'
-                             f'letter {letter_goods}\n'
+                             f'font {letter_goods}\n'
                              f'win {wins}\n'
                              f'captcha {captches}')
             running = False
@@ -406,9 +405,15 @@ def update_coloring():
     shop_window.details_bought = details_custom
     menu_window.buttons_bought = button_custom
     shop_window.buttons_bought = button_custom
+    menu_window.font_bought = font_custom
+    shop_window.font_bought = font_custom
+    if font_custom:
+        menu_window.text_font = 'data/myy-font.ttf'
+        shop_window.text_font = 'data/myy-font.ttf'
 
     menu_window.bought_element()
     shop_window.bought_element()
+    update_shop_buttons()
 
 
 if __name__ == '__main__':
