@@ -391,7 +391,7 @@ def transition():  # Функция переходов между сценами
                              f'font {int(font_custom)}\n'
                              f'wallpaper {int(wallpaper_custom)}\n'
                              f'mistake {mistake_goods}\n'
-                             f'font {letter_goods}\n'
+                             f'letter {letter_goods}\n'
                              f'win {wins}\n'
                              f'captcha {captches}')
             running = False

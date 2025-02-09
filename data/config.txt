@@ -4,6 +4,6 @@ details 0
 font 0
 wallpaper 0
 mistake 0
-font 0
+letter 0
 win 0
 captcha 0

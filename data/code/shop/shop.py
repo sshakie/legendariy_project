@@ -42,13 +42,13 @@ class Shop:
         # Интерфейс (кнопки)
         self.exit_button = Button(46, 657, 509, 75, 'назад', 0, type=6)
 
-        self.mistake_upgrade = Button(29, 197, 134, 75, ['право на ', 'ошибку'], 22, type=4)
-        self.letter_upgrade = Button(189, 196, 134, 75, ['раскрыть ', 'букву'], 22, type=4)
-        self.game_upgrade = Button(29, 277, 134, 75, ['игра-', 'капча'], 26, type=4, offset=(-10, 0))
-        self.font_custom = Button(111, 427, 134, 75, 'шрифт', 30, type=4)
-        self.button_custom = Button(271, 427, 134, 75, 'кнопки', 30, type=4)
-        self.detail_custom = Button(431, 427, 134, 75, 'детали', 27, type=4)
-        self.background_custom = Button(472, 512, 86, 59, 'фон', 30, type=5, offset=(0, -10))
+        self.mistake_upgrade = Button(29, 197, 134, 75, ['право на ', 'ошибку'], 22, font=self.text_font, type=4)
+        self.letter_upgrade = Button(189, 196, 134, 75, ['раскрыть ', 'букву'], 22, font=self.text_font, type=4)
+        self.game_upgrade = Button(29, 277, 134, 75, ['игра-', 'капча'], 26, font=self.text_font, type=4, offset=(-10, 0))
+        self.font_custom = Button(111, 427, 134, 75, 'шрифт', 30, font=self.text_font, type=4)
+        self.button_custom = Button(271, 427, 134, 75, 'кнопки', 30, font=self.text_font, type=4)
+        self.detail_custom = Button(431, 427, 134, 75, 'детали', 27, font=self.text_font, type=4)
+        self.background_custom = Button(472, 512, 86, 59, 'фон', 30, font=self.text_font, type=5, offset=(0, -10))
 
     def render(self):  # Функция для отображения интерфейса
         if self.active:
@@ -137,11 +137,11 @@ class Shop:
                            1, 0, 0, self.all_sprites)
         if self.font_bought:
             self.font = pygame.font.Font(self.text_font, 30)
-            self.mistake_upgrade = Button(29, 197, 134, 75, ['право на ', 'ошибку'], 22, type=4, font=self.text_font)
-            self.letter_upgrade = Button(189, 196, 134, 75, ['раскрыть ', 'букву'], 22, type=4, font=self.text_font)
-            self.game_upgrade = Button(29, 277, 134, 75, ['игра-', 'капча'], 26, type=4, offset=(-10, 0),
-                                       font=self.text_font)
-            self.button_custom = Button(111, 427, 134, 75, 'шрифт', 30, type=4, font=self.text_font)
-            self.detail_custom = Button(271, 427, 134, 75, 'кнопки', 30, type=4, font=self.text_font)
-            self.font_custom = Button(431, 427, 134, 75, 'детали', 27, type=4, font=self.text_font)
-            self.background_custom = Button(472, 512, 86, 59, 'фон', 30, type=5, offset=(0, -10), font=self.text_font)
+            self.mistake_upgrade = Button(29, 197, 134, 75, ['право на ', 'ошибку'], 22, font=self.text_font, type=4)
+            self.letter_upgrade = Button(189, 196, 134, 75, ['раскрыть ', 'букву'], 22, font=self.text_font, type=4)
+            self.game_upgrade = Button(29, 277, 134, 75, ['игра-', 'капча'], 26, font=self.text_font, type=4,
+                                       offset=(-10, 0))
+            self.font_custom = Button(111, 427, 134, 75, 'шрифт', 30, font=self.text_font, type=4)
+            self.button_custom = Button(271, 427, 134, 75, 'кнопки', 30, font=self.text_font, type=4)
+            self.detail_custom = Button(431, 427, 134, 75, 'детали', 27, font=self.text_font, type=4)
+            self.background_custom = Button(472, 512, 86, 59, 'фон', 30, font=self.text_font, type=5, offset=(0, -10))
