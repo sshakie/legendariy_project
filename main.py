@@ -194,18 +194,26 @@ def main():
                     if button_custom is False:
                         if buy(75):
                             button_custom = True
+                            update_shop_buttons()
+                            update_coloring()
                 elif butt_text == 'детали' and shop_window.playing is False:
                     if details_custom is False:
                         if buy(100):
                             details_custom = True
+                            update_shop_buttons()
+                            update_coloring()
                 elif butt_text == 'шрифт' and shop_window.playing is False:
                     if font_custom is False:
                         if buy(50):
                             font_custom = True
+                            update_shop_buttons()
+                            update_coloring()
                 elif butt_text == 'фон' and shop_window.playing is False:
                     if wallpaper_can_buy and wallpaper_custom is False:
                         if buy(250):
                             wallpaper_custom = True
+                            update_shop_buttons()
+                            update_coloring()
 
                 elif butt_text == 'назад' and not shop_window.playing and not start_transition and not stop_transition:
                     old_scene, new_scene = shop_window, menu_window
@@ -215,9 +223,6 @@ def main():
                     if not timer_event_actived:
                         pygame.mixer.music.load('data/sounds/menu/ost.wav')
                         pygame.mixer.music.play(loops=-1, fade_ms=1000)
-
-                update_shop_buttons()
-                update_coloring()
 
             if isinstance(game_window, Game):
                 if game_window.on_click(event):  # Если нажата кнопка в игре
@@ -267,12 +272,6 @@ def main():
                     menu_window.active = True
                     transition_timer, transition_alpha, k = 60, 255, 4  # здесь k=4, чтобы фпс не падал, когда мне это нужно
                     game_starting = True  # Запускает переход
-
-                    # Если игрок вышел, то нужно вернуть товары
-                    if old_mistake_goods > 0:
-                        mistake_goods += 1
-                    if old_letter_goods > 0:
-                        letter_goods += 1
 
                     sfx_click.play()
                     pygame.mixer.music.fadeout(2000)
@@ -345,7 +344,7 @@ def update_shop_buttons():  # Функция, обновляющая текст�
         shop_window.font_custom.set_image((270, 261, 134, 75), 405)
     if wallpaper_custom:
         shop_window.background_custom.set_image((174, 337, 86, 59), 261)
-    if button_custom and details_custom and font_custom:
+    elif button_custom and details_custom and font_custom:
         shop_window.background_custom.set_image((0, 337, 86, 59), 87)
         wallpaper_can_buy = True
 
