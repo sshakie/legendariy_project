@@ -25,6 +25,7 @@ class Menu:
                                         self.all_sprites)
         self.title = pygame.image.load('data/textures/ui.png').subsurface((0, 0, 298, 108))
         self.coin = pygame.image.load('data/textures/ui.png').subsurface((594, 0, 33, 30))
+        self.buttons_custom = load_image('data/textures/wallpapers/colored-elements/menu-buttons.png')
 
         # Интерфейс (кнопки)
         self.play_button = Button(101, 380, 404, 118, 'играть', 0, type=1)
@@ -44,8 +45,7 @@ class Menu:
             self.screen.blit(*self.shop_button.get_rect_coord())
             self.screen.blit(*self.exit_button.get_rect_coord())
             if self.buttons_bought:
-                buttons_custom = load_image('data/textures/wallpapers/colored-elements/menu-buttons.png')
-                self.screen.blit(buttons_custom, (0, 0))
+                self.screen.blit(self.buttons_custom, (0, 0))
 
             self.clock.tick(self.fps)
 

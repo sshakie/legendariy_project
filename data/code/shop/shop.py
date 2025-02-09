@@ -41,6 +41,7 @@ class Shop:
 
         # Интерфейс (кнопки)
         self.exit_button = Button(46, 657, 509, 75, 'назад', 0, type=6)
+        self.buttons_custom = load_image('data/textures/wallpapers/colored-elements/shop-buttons.png')
 
         self.mistake_upgrade = Button(29, 197, 134, 75, ['право на ', 'ошибку'], 22, font=self.text_font, type=4)
         self.letter_upgrade = Button(189, 196, 134, 75, ['раскрыть ', 'букву'], 22, font=self.text_font, type=4)
@@ -74,8 +75,7 @@ class Shop:
             self.screen.blit(*self.font_custom.get_rect_coord())
             self.screen.blit(*self.background_custom.get_rect_coord())
             if self.buttons_bought:
-                buttons_custom = load_image('data/textures/wallpapers/colored-elements/shop-buttons.png')
-                self.screen.blit(buttons_custom, (0, 0))
+                self.screen.blit(self.buttons_custom, (0, 0))
 
             self.screen.blit(self.coin, (551, 17))
             self.screen.blit(self.prices, (0, 0))
