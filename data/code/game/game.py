@@ -44,12 +44,14 @@ class Game:
 
         # Интерфейс
         self.all_sprites = pygame.sprite.Group()  # для анимированного фона
-        self.wallpaper = AnimatedSprite(load_image('data/textures/wallpapers/gray/animated-wallpaper3.png'), 60, 1, 0,
-                                        0,
-                                        self.all_sprites)
         if wallpaper_bought:
             AnimatedSprite(load_image('data/textures/wallpapers/colored-elements/animated-wallpaper3-wallpaper.png'),
                            60, 1, 0, 0, self.all_sprites)
+        else:
+            AnimatedSprite(load_image('data/textures/wallpapers/gray/animated-wallpaper3.png'), 60, 1, 0,
+                                        0,
+                                        self.all_sprites)
+
         self.line = pygame.image.load('data/textures/ui.png').subsurface((0, 156, 601, 93))
         self.coin = load_image('data/textures/ui.png').subsurface((628, 0, 18, 21))
         self.exit_button = Button(8, 6, 134, 39, 'выйти', 0, type=7)
@@ -193,36 +195,36 @@ class Game:
                     return self.reset_button
                 if self.exit_button_2.is_clicked(event):
                     return self.exit_button_2
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                button = self.check_clicked(event)
+                if button:
+                    if isinstance(button, Button):
+                        btn_text = button.get_text()
+                        if btn_text == '<':
+                            self.input_word = self.input_word[:-1]
+                            self.guessing[self.attempt_numbering][len(self.input_word)].set_letter('', -1)
+                            pygame.mixer.Sound('data/sounds/game/backspace.wav').play()
+                        elif btn_text == 'enter':
+                            self.return_press()
+                            pygame.mixer.Sound('data/sounds/game/enter.wav').play()
+                        else:
+                            if len(self.input_word) < self.len_word:
+                                self.input_word += btn_text
+                            pygame.mixer.Sound('data/sounds/game/press.wav').play()
+                        if int(self.letter_goods):
+                            for i, c in self.guessing[min(self.attempt_numbering, self.attempts - 1)].items():
+                                if c.letter == '':
+                                    if self.right_letters[i]:
+                                        c.set_letter(self.right_letters[i], 1)
+                                    else:
+                                        c.set_letter('', -2)
+                        for i, letter in enumerate(self.input_word):
+                            self.guessing[self.attempt_numbering][i].set_letter(letter, -2)
 
-            button = self.check_clicked(event)
-            if button:
-                if isinstance(button, Button):
-                    btn_text = button.get_text()
-                    if btn_text == '<':
-                        self.input_word = self.input_word[:-1]
-                        self.guessing[self.attempt_numbering][len(self.input_word)].set_letter('', -1)
-                        pygame.mixer.Sound('data/sounds/game/backspace.wav').play()
-                    elif btn_text == 'enter':
-                        self.return_press()
-                        pygame.mixer.Sound('data/sounds/game/enter.wav').play()
-                    else:
-                        if len(self.input_word) < self.len_word:
-                            self.input_word += btn_text
-                        pygame.mixer.Sound('data/sounds/game/press.wav').play()
-
-                    for i, c in self.guessing[min(self.attempt_numbering, self.attempts - 1)].items():
-                        if c.letter == '':
-                            if self.right_letters[i]:
-                                c.set_letter(self.right_letters[i], 1)
-                            else:
-                                c.set_letter('', -2)
-                    for i, letter in enumerate(self.input_word):
-                        self.guessing[self.attempt_numbering][i].set_letter(letter, -2)
-                return
 
             # Обработка нажатий с клавиатуры
-            if self.attempt_numbering < self.attempts:
-                if event.type == pygame.KEYDOWN:
+            elif event.type == pygame.KEYDOWN:
+                if self.attempt_numbering < self.attempts:
                     if event.key == pygame.K_BACKSPACE:
                         self.input_word = self.input_word[:-1]
                         self.guessing[self.attempt_numbering][len(self.input_word)].set_letter('', -1)
@@ -235,17 +237,18 @@ class Game:
                             self.input_word += event.unicode
                             pygame.mixer.Sound('data/sounds/game/press.wav').play()
 
-                if len(self.input_word) > self.len_word:
-                    self.input_word = self.input_word[0:self.len_word]
+                    if len(self.input_word) > self.len_word:
+                        self.input_word = self.input_word[0:self.len_word]
 
-                for i, c in self.guessing[min(self.attempt_numbering, self.attempts - 1)].items():
-                    if c.letter == '':
-                        if self.right_letters[i]:
-                            c.set_letter(self.right_letters[i], 1)
-                        else:
-                            c.set_letter('', -2)
-                for i, letter in enumerate(self.input_word):
-                    self.guessing[self.attempt_numbering][i].set_letter(letter, -2)
+                    if int(self.letter_goods):
+                        for i, c in self.guessing[min(self.attempt_numbering, self.attempts - 1)].items():
+                            if c.letter == '':
+                                if self.right_letters[i]:
+                                    c.set_letter(self.right_letters[i], 1)
+                                else:
+                                    c.set_letter('', -2)
+                    for i, letter in enumerate(self.input_word):
+                        self.guessing[self.attempt_numbering][i].set_letter(letter, -2)
 
     def accept_exiting(self, event):  # Функция для подтверждения/отмены выхода
         if self.display_sure and (
@@ -320,6 +323,7 @@ class Game:
                 self.check_win()
                 self.input_word = ''
                 self.red_rect.y += 98
+            self.letter_goods = 0
         else:
             self.transparency_red_rect = 200
 

@@ -110,6 +110,7 @@ class Shop:
                         pygame.mixer.Sound('data/sounds/select_2.wav').play()
                     else:
                         pygame.mixer.Sound('data/sounds/select.wav').play()
+                    return
 
     def key_pressing(self, event):
         if event.type == pygame.KEYDOWN and self.playing:
@@ -129,12 +130,6 @@ class Shop:
             return None
 
     def bought_element(self):
-        if self.wallpaper_bought:
-            AnimatedSprite(load_image('data/textures/wallpapers/colored-elements/animated-wallpaper2-wallpaper.png'),
-                           60, 1, 0, 0, self.all_sprites)
-        if self.details_bought:
-            AnimatedSprite(load_image('data/textures/wallpapers/colored-elements/animated-wallpaper2-details.png'), 60,
-                           1, 0, 0, self.all_sprites)
         if self.font_bought:
             self.font = pygame.font.Font(self.text_font, 30)
             self.mistake_upgrade = Button(29, 197, 134, 75, ['право на ', 'ошибку'], 22, font=self.text_font, type=4)
@@ -145,3 +140,11 @@ class Shop:
             self.button_custom = Button(271, 427, 134, 75, 'кнопки', 30, font=self.text_font, type=4)
             self.detail_custom = Button(431, 427, 134, 75, 'детали', 27, font=self.text_font, type=4)
             self.background_custom = Button(472, 512, 86, 59, 'фон', 30, font=self.text_font, type=5, offset=(0, -10))
+        if self.wallpaper_bought:
+            self.all_sprites = pygame.sprite.Group()
+            AnimatedSprite(load_image('data/textures/wallpapers/colored-elements/animated-wallpaper2-wallpaper.png'),
+                           60, 1, 0, 0, self.all_sprites)
+        elif self.details_bought:
+            self.all_sprites = pygame.sprite.Group()
+            AnimatedSprite(load_image('data/textures/wallpapers/colored-elements/animated-wallpaper2-details.png'), 60,
+                           1, 0, 0, self.all_sprites)

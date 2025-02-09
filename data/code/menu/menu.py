@@ -63,12 +63,16 @@ class Menu:
                     pygame.mixer.Sound('data/sounds/select_2.wav').play()
 
     def bought_element(self):
-        if self.wallpaper_bought:
-            AnimatedSprite(load_image('data/textures/wallpapers/colored-elements/animated-wallpaper1-wallpaper.png'),
-                           56, 1, 0, 0, self.all_sprites)
-        if self.details_bought:
-            AnimatedSprite(load_image('data/textures/wallpapers/colored-elements/animated-wallpaper1-details.png'), 56,
-                           1, 0, 0, self.all_sprites)
         if self.font_bought:
             self.font = pygame.font.Font(self.text_font, 30)
             'data/myy-font.ttf'
+
+        if self.wallpaper_bought:
+            self.all_sprites = pygame.sprite.Group()
+            AnimatedSprite(load_image('data/textures/wallpapers/colored-elements/animated-wallpaper1-wallpaper.png'),
+                           56, 1, 0, 0, self.all_sprites)
+        elif self.details_bought:
+            self.all_sprites = pygame.sprite.Group()
+            AnimatedSprite(load_image('data/textures/wallpapers/colored-elements/animated-wallpaper1-details.png'), 56,
+                           1, 0, 0, self.all_sprites)
+
