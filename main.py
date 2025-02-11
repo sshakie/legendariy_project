@@ -136,8 +136,8 @@ def main():
                         time_for_game = 110
                         len_word = 8
 
-                    game_window = Game(screen, time_for_game, attempts_for_game, len_word=len_word,
-                                       mistake_goods=mistake_goods, letter_goods=letter_goods,
+                    game_window = Game(screen, time_for_game, attempts_for_game,
+                                       len_word=len_word, mistake_goods=mistake_goods, letter_goods=letter_goods,
                                        wallpaper_bought=wallpaper_custom, font_bought=font_custom, active=True)
                     menu_window.active = False
 
