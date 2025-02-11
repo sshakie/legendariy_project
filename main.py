@@ -63,23 +63,21 @@ def main():
     global ws_width, old_scene, new_scene, start_transition, stop_transition, black_screen, glow_color
     global game_starting, transition_timer, transition_alpha, exiting, running, fps, k, money, glow_alpha
     global button_custom, details_custom, font_custom, wallpaper_can_buy, wallpaper_custom, mistake_goods, letter_goods
-    global menu_window, shop_window, game_window, wins, attempts_for_game, time_for_game, captches
+    global menu_window, shop_window, game_window, wins, captches
 
     pygame.display.set_caption('Wordy')
-    size = width, height = 600, 800
+    size = (600, 800)
     screen = pygame.display.set_mode(size, pygame.SRCALPHA)
 
     menu_window = Menu(screen, money, active=True)
     shop_window = Shop(screen, money, mistake_goods, letter_goods)
     update_shop_buttons()
     update_coloring()
-    old_mistake_goods = mistake_goods
-    old_letter_goods = letter_goods
 
     # Звуки
     timer_event, timer_event2 = pygame.USEREVENT + 1, pygame.USEREVENT + 2  # Создал, чтобы не накладывались ост на звуки
     pygame.time.set_timer(timer_event, 2000, loops=1)
-    timer_event_actived = True
+    timer_event_activated = True
 
     pygame.mixer.Sound('data/sounds/menu/start.wav').play()
     sfx_click = pygame.mixer.Sound('data/sounds/click.wav')
@@ -97,7 +95,7 @@ def main():
                     pygame.mixer.music.load('data/sounds/shop/ost.wav')
                     pygame.time.delay(500)
                     pygame.mixer.music.play(loops=-1, fade_ms=500)
-                timer_event_actived = False
+                timer_event_activated = False
             if event.type == timer_event2 and game_window.active:  # Сделал, чтобы успел fadeout menu_ost
                 pygame.mixer.music.load('data/sounds/game/ost (by zer).wav')
                 pygame.mixer.music.play(loops=-1)
@@ -144,10 +142,8 @@ def main():
                     menu_window.active = False
 
                     if mistake_goods > 0:
-                        old_mistake_goods = mistake_goods
                         mistake_goods -= 1
                     if letter_goods > 0:
-                        old_letter_goods = letter_goods
                         letter_goods -= 1
 
                     game_starting = True  # Запускает переход
@@ -170,7 +166,7 @@ def main():
                     start_transition = True
 
                     sfx_click.play()
-                    if not timer_event_actived:
+                    if not timer_event_activated:
                         pygame.mixer.music.load('data/sounds/shop/ost.wav')
                         pygame.mixer.music.play(loops=-1)
                 elif butt_text == 'выход':
@@ -224,7 +220,7 @@ def main():
                     start_transition = True
 
                     sfx_click.play()
-                    if not timer_event_actived:
+                    if not timer_event_activated:
                         pygame.mixer.music.load('data/sounds/menu/ost.wav')
                         pygame.mixer.music.play(loops=-1, fade_ms=1000)
 
