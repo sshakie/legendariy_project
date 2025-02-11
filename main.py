@@ -124,18 +124,22 @@ def main():
                     # до 4 побед = 5 поп., 220 сек | от 5 до 8 побед = 4 поп., 185 сек | от 8 до 11 побед = 3 поп. 150 сек | больше = 3 поп. 110 сек
                     time_for_game = 220
                     attempts_for_game = 5
+                    len_word = 5
                     if 5 <= wins <= 8:
                         attempts_for_game = 4
                         time_for_game = 185
+                        len_word = 6
                     elif 8 <= wins <= 11:
                         attempts_for_game = 3
                         time_for_game = 150
+                        len_word = 7
                     elif wins > 11:
                         attempts_for_game = 3
                         time_for_game = 110
+                        len_word = 8
 
                     game_window = Game(screen, time_for_game, attempts_for_game,
-                                       mistake_goods=mistake_goods, letter_goods=letter_goods,
+                                       len_word=len_word, mistake_goods=mistake_goods, letter_goods=letter_goods,
                                        wallpaper_bought=wallpaper_custom, font_bought=font_custom, active=True)
                     menu_window.active = False
 
@@ -248,17 +252,21 @@ def main():
                         # до 4 побед = 5 поп., 220 сек | от 5 до 8 побед = 4 поп., 185 сек | от 8 до 11 побед = 3 поп. 150 сек | больше = 3 поп. 110 сек
                         time_for_game = 220
                         attempts_for_game = 5
+                        len_word = 5
                         if 5 <= wins <= 8:
                             attempts_for_game = 4
                             time_for_game = 185
+                            len_word = 6
                         elif 8 <= wins <= 11:
                             attempts_for_game = 3
                             time_for_game = 150
+                            len_word = 7
                         elif wins > 11:
                             attempts_for_game = 3
                             time_for_game = 110
+                            len_word = 8
 
-                        game_window = Game(screen, time_for_game, attempts_for_game, mistake_goods=mistake_goods,
+                        game_window = Game(screen, time_for_game, attempts_for_game, len_word=len_word, mistake_goods=mistake_goods,
                                            letter_goods=letter_goods, wallpaper_bought=wallpaper_custom,
                                            font_bought=font_custom, active=True)
                         sfx_click.play()
